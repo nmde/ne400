@@ -1,1 +1,1 @@
-# thermo
+# thermo-solver
