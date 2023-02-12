@@ -1,4 +1,6 @@
 module SI_SteamTable
+    use class_Quantity
+
     implicit none
     private
 
@@ -12,9 +14,14 @@ contains
         y = y_0 + (x - x_0) * ((y_1 - y_0) / (x_1 - x_0))
     end function interpolate
 
-    function sat_p_t(pressure) result(temperature)
-        real,intent(in)::pressure
-        real::temperature
+    function sat_p_t(input_pressure) result(output_temperature)
+        class(Quantity),intent(in)::input_pressure
+        real::pressure,temperature
+        type(Quantity)::output_temperature
+
+        call verify_value(input_pressure)
+
+        pressure = input_pressure%get_in(1)
 
         if (pressure == 3) then
             temperature = 24.100
@@ -34,6 +41,15 @@ contains
             write(*,"(A,F6.1)") "Unexpected pressure: ", pressure
             stop "Unhandled pressure encountered"
         endif
-        write(*,"(A,F6.1,A,F6.1,A)") "Saturated water temperature at ", pressure, " kPa: ", temperature, " C"
+        output_temperature = Q(temperature, 5)
+        write(*,"(A,F6.1,A,F8.3,A)") "Saturated water temperature at ", pressure, " kPa: ", temperature, " C"
     end function sat_p_t
+
+    subroutine verify_value(value)
+        type(Quantity),intent(in)::value
+
+        if (value%get_unit() == 0) then
+            stop "Attempting to use unknown value"
+        endif
+    end subroutine verify_value
 end module SI_SteamTable
