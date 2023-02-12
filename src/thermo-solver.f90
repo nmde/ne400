@@ -10,15 +10,15 @@ contains
   subroutine solve
     type(Quantity)::pressures(9),turbine_efficiency,pump_efficiency,env_temperature,temperatures(9)
 
-    pressures(1) = Q(6880.0, 1)
-    pressures(2) = Q(1280.0, 1)
-    pressures(3) = Q(1280.0, 1)
-    pressures(4) = Q(1280.0, 1)
+    pressures(1) = Q(6880.0, kPa)
+    pressures(2) = Q(1280.0, kPa)
+    pressures(3) = Q(1280.0, kPa)
+    pressures(4) = Q(1280.0, kPa)
     pressures(5) = Q(3.0, 1)
     pressures(6) = Q(3.0, 1)
-    pressures(7) = Q(1280.0, 1)
-    pressures(8) = Q(1280.0, 1)
-    pressures(9) = Q(6880.0, 1)
+    pressures(7) = Q(1280.0, kPa)
+    pressures(8) = Q(1280.0, kPa)
+    pressures(9) = Q(6880.0, kPa)
 
     temperatures(1) = sat_p_t(pressures(1))
     temperatures(2) = Q(0.0, 0) ! Unknown
@@ -30,9 +30,9 @@ contains
     temperatures(8) = Q(0.0, 0) ! Unknown
     temperatures(9) = Q(0.0, 0) ! Unknown
 
-    turbine_efficiency = Q(0.9, 7)
-    pump_efficiency = Q(0.8, 7)
-    env_temperature = Q(27.0, 3)
+    turbine_efficiency = Q(0.9, unitless)
+    pump_efficiency = Q(0.8, unitless)
+    env_temperature = Q(27.0, C)
 
   end subroutine solve
 end module thermo_solver

@@ -1,18 +1,10 @@
-! Unit Codes
-! 0 Unknown quantity
-! 1 kPa
-! 2 psia
-! 3 C
-! 4 K
-! 5 F
-! 6 R
-! 7 (unitless)
-
 module class_Quantity
     implicit none
     private
 
-    public::Quantity,Q
+    public::Quantity,Q,kPa,psia,C,K,F,R,unitless
+
+    integer::kPa = 1, psia = 2, C = 3, K = 4, F = 5, R = 6, unitless = 7
 
     type Quantity
         private
@@ -56,13 +48,13 @@ contains
 
         if (unit == this%unit) then
             value = this%value
-        else if (this%unit == 1 .and. unit == 2) then
+        else if (this%unit == kPa .and. unit == psia) then
             value = 0.145038 * this%value
             write(*,101) this%value, " kPa = ", value, " psia"
-        else if (this%unit == 3 .and. unit == 4) then
+        else if (this%unit == C .and. unit == K) then
             value = 273.15 + this%value
             write(*,101) this%value, " C = ", value, " K"
-        else if (this%unit == 5 .and. unit == 6) then
+        else if (this%unit == F .and. unit == R) then
             value = 459.67 + this%value
             write(*,101) this%value, " F = ", value, " R"
         else

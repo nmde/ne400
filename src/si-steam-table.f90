@@ -21,7 +21,7 @@ contains
 
         call verify_value(input_pressure)
 
-        pressure = input_pressure%get_in(1)
+        pressure = input_pressure%get_in(kPa)
 
         if (pressure == 3) then
             temperature = 24.100
@@ -41,7 +41,7 @@ contains
             write(*,"(A,F6.1)") "Unexpected pressure: ", pressure
             stop "Unhandled pressure encountered"
         endif
-        output_temperature = Q(temperature, 5)
+        output_temperature = Q(temperature, C)
         write(*,"(A,F6.1,A,F8.3,A)") "Saturated water temperature at ", pressure, " kPa: ", temperature, " C"
     end function sat_p_t
 
