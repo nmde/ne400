@@ -2,24 +2,24 @@ module class_Quantity
     implicit none
     private
 
-    public::Quantity,Q,kPa,psia,C,K,F,R,unitless
+    public::Quantity,Q,kPa,psia,C,K,F,R,unitless,kJ_kg,kJ_kgK,m3_kg
 
-    integer::kPa = 1, psia = 2, C = 3, K = 4, F = 5, R = 6, unitless = 7
+    integer::kPa = 1, psia = 2, C = 3, K = 4, F = 5, R = 6, unitless = 7, kJ_kg = 8, kJ_kgK = 9, m3_kg = 10
 
     type Quantity
         private
 
-        real::value
+        real*8::value
         integer::unit
 
     contains
-        procedure::get_value,get_unit,get_in
+        procedure::get_value,get_unit,get_in,plus,minus,times,divide
     end type Quantity
 
 contains
     function Q(initial_value, initial_unit) result(this)
         type(Quantity)::this
-        real,intent(in)::initial_value
+        real*8,intent(in)::initial_value
         integer,intent(in)::initial_unit
 
         this%value = initial_value
@@ -28,7 +28,7 @@ contains
 
     function get_value(this) result(value)
         class(Quantity),intent(in)::this
-        real::value
+        real*8::value
 
         value = this%value
     end function get_value
@@ -44,7 +44,7 @@ contains
         101 FORMAT (F6.1,A,F6.1,A)
         class(Quantity),intent(in)::this
         integer,intent(in)::unit
-        real::v
+        real*8::v
 
         if (unit == this%unit) then
             v = this%value
@@ -62,4 +62,69 @@ contains
             stop "Unhandled unit conversion"
         end if
     end function get_in
+
+    function plus(this, otherQuantity) result(re)
+        class(Quantity),intent(in)::this
+        type(Quantity),intent(in)::otherQuantity
+        type(Quantity)::re
+
+        if (this%get_unit() == 0 .or. otherQuantity%get_unit() == 0) then
+            write(*,"(A)") "Warning: Operation with unknown quantities"
+        end if
+
+        if (this%get_unit() /= otherQuantity%get_unit()) then
+            write(*,"(A,I3,A,I3)") "Incompatible units for addition: ", this%get_unit(), ", ", otherQuantity%get_unit()
+            stop "Incompatible units"
+        end if
+
+        re = Q(this%get_value() + otherQuantity%get_value(), this%get_unit())
+        write(*,"(F8.3,A,F9.3,A,F9.3)") this%get_value(), " + ", otherQuantity%get_value(), " = ", re%get_value()
+    end function plus
+
+    function minus(this, otherQuantity) result(re)
+        class(Quantity),intent(in)::this
+        type(Quantity),intent(in)::otherQuantity
+        type(Quantity)::re
+
+        if (this%get_unit() == 0 .or. otherQuantity%get_unit() == 0) then
+            write(*,"(A)") "Warning: Operation with unknown quantities"
+        end if
+
+        if (this%get_unit() /= otherQuantity%get_unit()) then
+            write(*,"(A,I3,A,I3)") "Incompatible units for subtraction: ", this%get_unit(), ", ", otherQuantity%get_unit()
+            stop "Incompatible units"
+        end if
+
+        re = Q(this%get_value() - otherQuantity%get_value(), this%get_unit())
+        write(*,"(F8.3,A,F8.3,A,F8.3)") this%get_value(), " - ", otherQuantity%get_value(), " = ", re%get_value()
+    end function minus
+
+    function times(this, otherQuantity, outputUnits) result(re)
+        class(Quantity),intent(in)::this
+        type(Quantity),intent(in)::otherQuantity
+        integer,intent(in)::outputUnits
+        type(Quantity)::re
+
+        if (this%get_unit() == 0 .or. otherQuantity%get_unit() == 0) then
+            write(*,"(A)") "Warning: Operation with unknown quantities"
+        end if
+
+        ! TODO: automatically determine units
+        re = Q(this%get_value() * otherQuantity%get_value(), outputUnits)
+        write(*,"(F8.3,A,F8.3,A,F9.3)") this%get_value(), " * ", otherQuantity%get_value(), " = ", re%get_value()
+    end function times
+
+    function divide(this, otherQuantity, output_units) result(re)
+        class(Quantity),intent(in)::this
+        type(Quantity),intent(in)::otherQuantity
+        integer,intent(in)::output_units
+        type(Quantity)::re
+
+        if (this%get_unit() == 0 .or. otherQuantity%get_unit() == 0) then
+            write(*,"(A)") "Warning: Operation with unknown quantities"
+        end if
+
+        re = Q(this%get_value() / otherQuantity%get_value(), output_units)
+        write(*,"(F8.3,A,F8.3,A,F8.3)") this%get_value(), " / ", otherQuantity%get_value(), " = ", re%get_value()
+    end function divide
 end module class_Quantity
