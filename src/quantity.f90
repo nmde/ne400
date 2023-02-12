@@ -2,9 +2,10 @@ module class_Quantity
     implicit none
     private
 
-    public::Quantity,Q,kPa,psia,C,K,F,R,unitless,kJ_kg,kJ_kgK,m3_kg
+    public::Quantity,Q,kPa,psia,C,K,F,R,unitless,kJ_kg,kJ_kgK,m3_kg,ft3_lbm,btu_lbm,btu_lbmR
 
-    integer::kPa = 1, psia = 2, C = 3, K = 4, F = 5, R = 6, unitless = 7, kJ_kg = 8, kJ_kgK = 9, m3_kg = 10
+    integer::kPa = 1, psia = 2, C = 3, K = 4, F = 5, R = 6, unitless = 7, kJ_kg = 8, kJ_kgK = 9, m3_kg = 10, &
+        ft3_lbm = 11, btu_lbm = 12, btu_lbmR = 13
 
     type Quantity
         private
