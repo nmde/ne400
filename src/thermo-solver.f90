@@ -8,27 +8,29 @@ module thermo_solver
   public :: solve
 contains
   subroutine solve
-    type(Quantity)::pressures(9),turbine_efficiency,pump_efficiency,env_temperature,temperatures(9)
+    type(Quantity)::pressure(9),turbine_efficiency,pump_efficiency,env_temperature,temperature(9)
 
-    pressures(1) = Q(6880.0, kPa)
-    pressures(2) = Q(1280.0, kPa)
-    pressures(3) = Q(1280.0, kPa)
-    pressures(4) = Q(1280.0, kPa)
-    pressures(5) = Q(3.0, 1)
-    pressures(6) = Q(3.0, 1)
-    pressures(7) = Q(1280.0, kPa)
-    pressures(8) = Q(1280.0, kPa)
-    pressures(9) = Q(6880.0, kPa)
+    call initialize_steam_tables()
 
-    temperatures(1) = sat_p_t(pressures(1))
-    temperatures(2) = Q(0.0, 0) ! Unknown
-    temperatures(3) = sat_p_t(pressures(3))
-    temperatures(4) = sat_p_t(pressures(4))
-    temperatures(5) = Q(0.0, 0) ! Unknown
-    temperatures(6) = sat_p_t(pressures(5))
-    temperatures(7) = Q(0.0, 0) ! Unknown
-    temperatures(8) = Q(0.0, 0) ! Unknown
-    temperatures(9) = Q(0.0, 0) ! Unknown
+    pressure(1) = Q(6880.0, kPa)
+    pressure(2) = Q(1280.0, kPa)
+    pressure(3) = Q(1280.0, kPa)
+    pressure(4) = Q(1280.0, kPa)
+    pressure(5) = Q(3.0, 1)
+    pressure(6) = Q(3.0, 1)
+    pressure(7) = Q(1280.0, kPa)
+    pressure(8) = Q(1280.0, kPa)
+    pressure(9) = Q(6880.0, kPa)
+
+    temperature(1) = sat_p_t(pressure(1))
+    temperature(2) = Q(0.0, 0) ! Unknown
+    temperature(3) = sat_p_t(pressure(3))
+    temperature(4) = sat_p_t(pressure(4))
+    temperature(5) = Q(0.0, 0) ! Unknown
+    temperature(6) = sat_p_t(pressure(5))
+    temperature(7) = Q(0.0, 0) ! Unknown
+    temperature(8) = Q(0.0, 0) ! Unknown
+    temperature(9) = Q(0.0, 0) ! Unknown
 
     turbine_efficiency = Q(0.9, unitless)
     pump_efficiency = Q(0.8, unitless)

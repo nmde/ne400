@@ -40,23 +40,23 @@ contains
         unit = this%unit
     end function get_unit
 
-    function get_in(this, unit) result(value)
+    function get_in(this, unit) result(v)
         101 FORMAT (F6.1,A,F6.1,A)
         class(Quantity),intent(in)::this
         integer,intent(in)::unit
-        real::value
+        real::v
 
         if (unit == this%unit) then
-            value = this%value
+            v = this%value
         else if (this%unit == kPa .and. unit == psia) then
-            value = 0.145038 * this%value
-            write(*,101) this%value, " kPa = ", value, " psia"
+            v = 0.145038 * this%value
+            write(*,101) this%value, " kPa = ", v, " psia"
         else if (this%unit == C .and. unit == K) then
-            value = 273.15 + this%value
-            write(*,101) this%value, " C = ", value, " K"
+            v = 273.15 + this%value
+            write(*,101) this%value, " C = ", v, " K"
         else if (this%unit == F .and. unit == R) then
-            value = 459.67 + this%value
-            write(*,101) this%value, " F = ", value, " R"
+            v = 459.67 + this%value
+            write(*,101) this%value, " F = ", v, " R"
         else
             write(*,"(A,I0.3,A,I0.3)") "Unhandled conversion from ", this%unit, " to ", unit
             stop "Unhandled unit conversion"
