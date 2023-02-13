@@ -39,7 +39,7 @@ contains
             write(*,"(A)") "Using imperial steam tables"
             open(unit=11,file="C:\Users\dmnev\Documents\nmde\thermo\src\imperial/pressure-table.txt", &
                 status="old",action="read",iostat=io_stat)
-            ptable_rows = 4
+            ptable_rows = 9
         end if
 
         if (io_stat /= 0) then
@@ -52,12 +52,12 @@ contains
             write(*,"(A)") "Using SI temperature tables"
             open(unit=12,file="C:\Users\dmnev\Documents\nmde\thermo\src\si/temperature-table.txt", &
                 status="old",action="read",iostat=io_stat)
-            ttable_rows = 2
+            ttable_rows = 0
         else
             write(*,"(A)") "Using imperial temperature tables"
             open(unit=12,file="C:\Users\dmnev\Documents\nmde\thermo\src\imperial/temperature-table.txt", &
                 status="old",action="read",iostat=io_stat)
-            ttable_rows = 0
+            ttable_rows = 2
         end if
 
         if (io_stat /= 0) then
@@ -68,7 +68,7 @@ contains
 
         read(11,*)
         do i=1,ptable_rows
-            read(11,"(F6.1,F8.3,F10.7,F10.6,F8.2,F7.1,F7.1,F7.4,F7.4,F7.4)") pressure_table(i,1), &
+            read(11,"(F6.1,F8.3,F10.7,F11.6,F8.2,F7.1,F7.1,F7.4,F7.4,F7.4)") pressure_table(i,1), &
                 pressure_table(i,2), pressure_table(i,3), pressure_table(i,4), &
                 pressure_table(i,5), pressure_table(i,6), pressure_table(i,7), &
                 pressure_table(i,8), pressure_table(i,9), pressure_table(i,10)
