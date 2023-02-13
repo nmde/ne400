@@ -9,6 +9,6 @@ module thermo_solver
   public::solve
 contains
   subroutine solve
-    call problem_1()
+    call problem_2()
   end subroutine solve
 end module thermo_solver
