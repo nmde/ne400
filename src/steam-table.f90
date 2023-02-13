@@ -39,7 +39,7 @@ contains
             write(*,"(A)") "Using imperial steam tables"
             open(unit=11,file="C:\Users\dmnev\Documents\nmde\thermo\src\imperial/pressure-table.txt", &
                 status="old",action="read",iostat=io_stat)
-            ptable_rows = 9
+            ptable_rows = 21
         end if
 
         if (io_stat /= 0) then

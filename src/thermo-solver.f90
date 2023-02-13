@@ -2,6 +2,7 @@ module thermo_solver
   use hw2p1
   use hw2p2
   use hw2p3
+  use hw2p4
 
   implicit none
   private
@@ -9,6 +10,6 @@ module thermo_solver
   public::solve
 contains
   subroutine solve
-    call problem_3()
+    call problem_4()
   end subroutine solve
 end module thermo_solver

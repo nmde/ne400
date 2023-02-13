@@ -93,7 +93,8 @@ contains
         end if
 
         if (this%get_unit() /= otherQuantity%get_unit()) then
-            write(*,"(A,I3,A,I3)") "Incompatible units for subtraction: ", this%get_unit(), ", ", otherQuantity%get_unit()
+            write(*,"(A,I3,A,I3,A,F8.3,A,F8.3,A)") "Incompatible units for subtraction: ", this%get_unit(), ", ", &
+                otherQuantity%get_unit(), " (", this%get_value(), " - ", otherQuantity%get_value(), ")"
             stop "Incompatible units"
         end if
 
