@@ -11,7 +11,7 @@ module hw2p3
 contains
     subroutine problem_3
         type(Quantity)::hf,hfg,sf,sfg,v,x,x2,Whpt,Wlpt,Wcp,Wfwp,Qh,m3_m1, &
-            m2_m1
+            m2_m1,m4_m1,m5_m1,one,efficiency
 
         call initialize_steam_tables(1)
 
@@ -101,12 +101,6 @@ contains
         enthalpy(14) = hf%plus(x%times(hfg, btu_lbm))
         call report_point(14)
 
-        ! Point 13
-        pressure(13) = pressure(3)
-        enthalpy(13) = sat_p_hf(pressure(13))
-        entropy(13) = sat_p_sf(pressure(13))
-        call report_point(13)
-
         ! Point 9
         pressure(9) = pressure(8)
         enthalpy(9) = sat_p_hf(pressure(9))
@@ -156,12 +150,42 @@ contains
         entropy(1) = sat_p_sf(pressure(1))
         call report_point(1)
 
+        ! Point 13
+        pressure(13) = pressure(3)
+        enthalpy(13) = sat_p_hf(pressure(13))
+        entropy(13) = sat_p_sf(pressure(13))
+        call report_point(13)
+
         Qh = enthalpy(2)%minus(enthalpy(1))
         write(*,"(A,F8.3)") "Qh: ", Qh%get_value()
 
         m3_m1 = enthalpy(1)%minus(enthalpy(12))
         m3_m1 = m3_m1%divide(enthalpy(3)%minus(enthalpy(13)), unitless)
         write(*,"(A,F8.3)") "m3/m1: ", m3_m1%get_value()
+
+        m2_m1 = Q(0.113293D0, unitless)
+        m4_m1 = Q(0.100681D0, unitless)
+        m5_m1 = Q(-0.09091D0, unitless)
+        one = Q(1D0, unitless)
+
+        Whpt = enthalpy(2)%times(one%minus(m2_m1), btu_lbm)
+        Whpt = Whpt%minus(enthalpy(3)%times(m3_m1, btu_lbm))
+        Whpt = Whpt%minus(enthalpy(4)%times(one%minus(m2_m1%minus(m3_m1)), btu_lbm))
+        Whpt = Whpt%times(Q(-1D0, unitless), btu_lbm)
+        write(*,"(A,F8.3)") "HPT work: ", Whpt%get_value()
+
+        Wlpt = enthalpy(7)%times(one%minus(m2_m1%minus(m3_m1%minus(m4_m1))), btu_lbm)
+        Wlpt = Wlpt%minus(enthalpy(14)%times(m5_m1, btu_lbm))
+        Wlpt = Wlpt%minus(enthalpy(8)%times(one%minus(m2_m1%minus(m3_m1%minus(m4_m1%minus(m5_m1)))), btu_lbm))
+        write(*,"(A,F8.3)") "LPT work: ", Wlpt%get_value()
+
+        Wcp = enthalpy(10)%minus(enthalpy(9))
+        Wcp = Wcp%times(one%minus(m2_m1%minus(m3_m1%minus(m4_m1%minus(m5_m1)))), btu_lbm)
+        write(*,"(A,F8.3)") "CP work: ", Wcp%get_value()
+
+        efficiency = Whpt%plus(Wlpt%plus(Wcp%plus(Wfwp)))
+        efficiency = efficiency%divide(Qh, unitless)
+        write(*,"(A,F8.3)") "Cycle efficiency: ", efficiency%get_value()
     end subroutine problem_3
 
     subroutine report_point(point)

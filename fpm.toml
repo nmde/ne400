@@ -1,4 +1,4 @@
-name = "ne400"
+name = "thermo-solver"
 version = "0.1.0"
 license = "license"
 author = "Daniel Nevius"
