@@ -29,7 +29,7 @@ contains
         turbine_efficiency = Q(0.9D0, unitless)
         pump_efficiency = Q(0.8D0, unitless)
         env_temperature = Q(27D0, C)
-        temp = Q(env_temperature%get_in(K), K)
+        temp = env_temperature%get_in(K)
 
         ! Point 1 - saturated vapor
         temperature(1) = sat_p_t(pressure(1))

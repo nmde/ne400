@@ -2,10 +2,12 @@ module class_Quantity
     implicit none
     private
 
-    public::Quantity,Q,kPa,psia,C,K,F,R,unitless,kJ_kg,kJ_kgK,m3_kg,ft3_lbm,btu_lbm,btu_lbmR
+    public::Quantity,Q,kPa,psia,C,K,F,R,unitless,kJ_kg,kJ_kgK,m3_kg,ft3_lbm,btu_lbm,btu_lbmR,lbm_gal,gal_min, &
+        btu_lbmF, lbm_min, lbm_s, btu_s
 
     integer::kPa = 1, psia = 2, C = 3, K = 4, F = 5, R = 6, unitless = 7, kJ_kg = 8, kJ_kgK = 9, m3_kg = 10, &
-        ft3_lbm = 11, btu_lbm = 12, btu_lbmR = 13
+        ft3_lbm = 11, btu_lbm = 12, btu_lbmR = 13, lbm_gal = 14, gal_min = 15, btu_lbmF = 16, lbm_min = 17, &
+        lbm_s = 18, btu_s = 19
 
     type Quantity
         private
@@ -45,19 +47,22 @@ contains
         101 FORMAT (F6.1,A,F6.1,A)
         class(Quantity),intent(in)::this
         integer,intent(in)::unit
-        real*8::v
+        type(Quantity)::v
 
         if (unit == this%unit) then
-            v = this%value
+            v = this
         else if (this%unit == kPa .and. unit == psia) then
-            v = 0.145038 * this%value
-            write(*,101) this%value, " kPa = ", v, " psia"
+            v = Q(0.145038 * this%value, psia)
+            write(*,101) this%value, " kPa = ", v%get_value(), " psia"
         else if (this%unit == C .and. unit == K) then
-            v = 273.15 + this%value
-            write(*,101) this%value, " C = ", v, " K"
+            v = Q(273.15 + this%value, K)
+            write(*,101) this%value, " C = ", v%get_value(), " K"
         else if (this%unit == F .and. unit == R) then
-            v = 459.67 + this%value
-            write(*,101) this%value, " F = ", v, " R"
+            v = Q(459.67 + this%value, R)
+            write(*,101) this%value, " F = ", v%get_value(), " R"
+        else if (this%unit == lbm_min .and. unit == lbm_s) then
+            v = Q(this%value / 60, lbm_s)
+            write(*,101) this%value, " lbm/min = ", v%get_value(), " lbm/s"
         else
             write(*,"(A,I0.3,A,I0.3)") "Unhandled conversion from ", this%unit, " to ", unit
             stop "Unhandled unit conversion"

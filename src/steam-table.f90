@@ -160,13 +160,16 @@ contains
         type(Quantity),intent(in)::qu
         integer,intent(in)::type
         real*8::v
+        type(Quantity)::temp
 
         call verify_value(qu)
 
         if (type == 0) then
-            v = qu%get_in(pressure_units)
+            temp = qu%get_in(pressure_units)
+            v = temp%get_value()
         else if (type == 1) then
-            v = qu%get_in(temperature_units)
+            temp = qu%get_in(temperature_units)
+            v = temp%get_value()
         end if
     end function get_in_units
 
