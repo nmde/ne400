@@ -65,7 +65,8 @@ contains
 
     subroutine lab_2
         integer::i
-        type(Quantity)::qdot_2_4(5),rate,Cp,density,mdot,Th,Tc,qdot_5_6(5)
+        type(Quantity)::qdot_2_4(5),rate,Cp,density,mdot,Th,Tc,qdot_5_6(5),Qth,Qtc,minus_one
+        real::err_2_4(5),err_5_6(5)
 
         rate = Q(500D0, gal_min)
         density = Q(8.272D0, lbm_gal)
@@ -79,21 +80,31 @@ contains
 
         mdot = rate%times(density, lbm_min)
         mdot = mdot%get_in(lbm_s)
+        Qth = mdot%times(Cp, btu_sF)
+        minus_one = Q(-1D0, unitless)
+        Qtc = minus_one%times(mdot%times(Cp, btu_sF), btu_sF)
+        write(*,"(A,F8.3)") "Qth = ", Qth%get_value()
+        write(*,"(A,F8.3)") "Qtc = ", Qtc%get_value()
+
         do i=1,5
             Th = t_avg(i,3)
             Tc = t_avg(i,1)
             qdot_2_4(i) = mdot%times(Cp%times(Th%minus(Tc), btu_lbm), btu_s)
+            err_2_4(i) = REAL(sqrt(((std(i,3)%get_value() ** 2) * (Qth%get_value() ** 2)) + &
+                ((std(i,1)%get_value() ** 2) * (Qtc%get_value() ** 2))))
             Th = t_avg(i,4)
             Tc = t_avg(i,5)
             qdot_5_6(i) = mdot%times(Cp%times(Th%minus(Tc), btu_lbm), btu_s)
+            err_5_6(i) = REAL(sqrt(((std(i,4)%get_value() ** 2) * (Qth%get_value() ** 2)) + &
+                ((std(i,5)%get_value() ** 2) * (Qtc%get_value() ** 2))))
         end do
 
         do i=1,5
-            write(*,"(A,I1,A,F8.3)") "Qdot ", i, " T-2 to T-4 : ", qdot_2_4(i)%get_value()
+            write(*,"(A,I1,A,F8.3,A,F8.3)") "Qdot ", i, " T-2 to T-4 : ", qdot_2_4(i)%get_value(), " +/- ", err_2_4(i)
         end do
 
         do i=1,5
-            write(*,"(A,I1,A,F8.3)") "Qdot ", i, " T-5 to T-6 : ", qdot_5_6(i)%get_value()
+            write(*,"(A,I1,A,F8.3,A,F8.3)") "Qdot ", i, " T-5 to T-6 : ", qdot_5_6(i)%get_value(), " +/- ", err_2_4(i)
         end do
     end subroutine lab_2
     
