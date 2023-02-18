@@ -7,9 +7,9 @@ module hw2p1
 
     type(Quantity)::pressure(9),temperature(9),enthalpy_s(9),enthalpy_a(9),entropy_a(9),entropy_s(9)
 
-    public::problem_1
+    public::hw2_problem_1
 contains
-    subroutine problem_1
+    subroutine hw2_problem_1
         type(Quantity)::turbine_efficiency,pump_efficiency,env_temperature,hf,v,x_s,x_a,&
             Wshpt,Wahpt,Wslpt,Walpt,Wsmcp,Wamcp,Wsfwp,Wafwp,Qah,Walpt_m1,ratio,Wamcp_m1, &
             efficiency,hfg,sf,sfg,i_hpt,i_lpt,i_mcp,i_fwp,temp
@@ -181,7 +181,7 @@ contains
 
         i_fwp = temp%times(entropy_a(8)%plus(entropy_a(9)), kJ_kg)
         write(*, "(A,F8.3)") "FWP irreversiblity: ", i_fwp%get_value()
-    end subroutine problem_1
+    end subroutine hw2_problem_1
 
     subroutine report_point(point)
         integer,intent(in)::point

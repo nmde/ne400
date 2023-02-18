@@ -7,9 +7,9 @@ module hw2p3
 
     type(Quantity)::pressure(14),temperature(14),enthalpy(14),entropy(14)
 
-    public::problem_3
+    public::hw2_problem_3
 contains
-    subroutine problem_3
+    subroutine hw2_problem_3
         type(Quantity)::hf,hfg,sf,sfg,v,x,x2,Whpt,Wlpt,Wcp,Wfwp,Qh,m3_m1, &
             m2_m1,m4_m1,m5_m1,one,efficiency
 
@@ -186,7 +186,7 @@ contains
         efficiency = Whpt%plus(Wlpt%plus(Wcp%plus(Wfwp)))
         efficiency = efficiency%divide(Qh, unitless)
         write(*,"(A,F8.3)") "Cycle efficiency: ", efficiency%get_value()
-    end subroutine problem_3
+    end subroutine hw2_problem_3
 
     subroutine report_point(point)
         integer,intent(in)::point

@@ -7,9 +7,9 @@ module hw2p4
 
     type(Quantity)::pressure(14),temperature(14),enthalpy(14),entropy(14)
 
-    public::problem_4
+    public::hw2_problem_4
 contains
-    subroutine problem_4
+    subroutine hw2_problem_4
         type(Quantity)::hf,hfg,sf,sfg,v,x,Wt,Qh,Wcp,Wfwp,ratio,one,efficiency
 
         call initialize_steam_tables(1)
@@ -97,7 +97,7 @@ contains
         efficiency = Wt%plus(Wcp%plus(Wfwp))
         efficiency = efficiency%divide(Qh, unitless)
         write(*,"(A,F8.3)") "Cycle efficiency: ", efficiency%get_value()
-    end subroutine problem_4
+    end subroutine hw2_problem_4
 
     subroutine report_point(point)
         integer,intent(in)::point
