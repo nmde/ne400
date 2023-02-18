@@ -85,11 +85,13 @@ contains
     end function get_n
 
     subroutine solve(x, bigI, nu, w, bigM, sigma_t, sigma_s, S, n_max)
+        101 FORMAT (A,I3,A,F12.6)
+
         real*16,intent(in)::x(*),w(*),sigma_t(*),sigma_s(*),S(*),nu(*)
         integer,intent(in)::bigI,bigM,n_max
         integer::i,m,n,n_index,n_max_real
         real*16,allocatable::delta_x(:),tau(:,:),alpha(:,:),S_tot(:,:),psi(:,:,:),phi(:,:),J(:,:), &
-            delta_r(:,:)
+            delta_r(:,:),phi_final(:),phibar_final(:),j_final(:),phibar(:,:),psibar(:,:,:)
 
         n_max_real = (n_max + 1) * 2
         write(*,"(A,I3)") "n_max_real: ", n_max_real
@@ -98,9 +100,14 @@ contains
         allocate(alpha(bigM,bigI))
         allocate(S_tot(n_max_real + 1, bigI))
         allocate(psi(n_max_real + 1,bigM,bigI + 1))
+        allocate(psibar(n_max_real + 1,bigM,bigI + 1))
         allocate(phi(n_max_real + 1,bigI + 1))
+        allocate(phibar(n_max_real + 1,bigI + 1))
         allocate(J(n_max_real + 1,bigI + 1))
         allocate(delta_r(n_max_real + 1,bigI))
+        allocate(phi_final(bigI))
+        allocate(phibar_final(bigI))
+        allocate(j_final(bigI))
 
         do i=1,bigI
             delta_x(i) = x(i + 1) - x(i)
@@ -156,7 +163,7 @@ contains
             end do
             do m=1,bigM
                 do i=1,bigI
-                    psi(get_n(-1 * n, n_max),m,i) = (alpha(m,i) * psi(n_index,m,i)) + &
+                    psibar(get_n(-1 * n, n_max),m,i) = (alpha(m,i) * psi(n_index,m,i)) + &
                         ((1 - alpha(m,i)) * psi(n_index,m,i + 1))
                 end do
             end do
@@ -169,16 +176,30 @@ contains
                 end do
             end do
             do i=1,bigI
-                phi(get_n(-1 * n, n_max),i) = 0
+                phibar(get_n(-1 * n, n_max),i) = 0
                 do m=1,bigM
-                    phi(get_n(-1 * n, n_max),i) = phi(get_n(-1 * n, n_max),i) + &
-                        (psi(get_n(-1 * n, n_max),m,i) * w(m))
+                    phibar(get_n(-1 * n, n_max),i) = phibar(get_n(-1 * n, n_max),i) + &
+                        (psibar(get_n(-1 * n, n_max),m,i) * w(m))
                 end do
             end do
             do i=1,bigI
                 delta_r(n_index,i) = J(n_index,i+1) - J(n_index,i) + (delta_x(i) * &
-                    ((sigma_t(i) * phi(get_n(-1 * n, n_max), i)) - (2 * S_tot(n_index,i))))
+                    ((sigma_t(i) * phibar(get_n(-1 * n, n_max), i)) - (2 * S_tot(n_index,i))))
             end do
+        end do
+
+        do i=1,bigI
+            phi_final(i) = 0
+            phibar_final(i) = 0
+            j_final(i) = 0
+            do n=0,n_max
+                phi_final(i) = phi_final(i) + phi(get_n(n,n_max),i)
+                phibar_final(i) = phibar_final(i) + phibar(get_n(n,n_max),i)
+                j_final(i) = j_final(i) + J(get_n(n,n_max),i)
+            end do
+            write(*,101) "phi*_", i, " = ", phi_final(i)
+            write(*,101) "phibar*_", i, " = ", phi_final(i)
+            write(*,101) "J*_", i, " = ", phi_final(i)
         end do
     end subroutine solve
 end module ne401project
