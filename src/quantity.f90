@@ -3,9 +3,9 @@ module class_Quantity
     private
 
     public::Quantity,Q,kPa,psia,C,K,F,R,unitless,kJ_kg,kJ_kgK,m3_kg,ft3_lbm,btu_lbm,btu_lbmR,lbm_gal,gal_min, &
-        btu_lbmF, lbm_min, lbm_s, btu_s, btu_sF
+        btu_lbmF,lbm_min,lbm_s,btu_s,btu_sF,unknown
 
-    integer::kPa = 1, psia = 2, C = 3, K = 4, F = 5, R = 6, unitless = 7, kJ_kg = 8, kJ_kgK = 9, m3_kg = 10, &
+    integer::unknown = 0, kPa = 1, psia = 2, C = 3, K = 4, F = 5, R = 6, unitless = 7, kJ_kg = 8, kJ_kgK = 9, m3_kg = 10, &
         ft3_lbm = 11, btu_lbm = 12, btu_lbmR = 13, lbm_gal = 14, gal_min = 15, btu_lbmF = 16, lbm_min = 17, &
         lbm_s = 18, btu_s = 19, btu_sF = 20
 
@@ -49,6 +49,8 @@ contains
 
         if (this%unit == unitless) then
             unit_str = ""
+        else if (this%unit == unknown) then
+            unit_str = "UNKNOWN"
         else if (this%unit == F) then
             unit_str = "F"
         else if (this%unit == psia) then
