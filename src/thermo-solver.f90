@@ -13,6 +13,6 @@ module thermo_solver
   public::solve
 contains
   subroutine solve
-    call project()
+    call hw3_problem_1()
   end subroutine solve
 end module thermo_solver

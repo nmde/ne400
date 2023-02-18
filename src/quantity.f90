@@ -16,7 +16,7 @@ module class_Quantity
         integer::unit
 
     contains
-        procedure::get_value,get_unit,get_in,plus,minus,times,divide
+        procedure::get_value,get_unit,get_in,plus,minus,times,divide,get_unit_str
     end type Quantity
 
 contains
@@ -42,6 +42,26 @@ contains
 
         unit = this%unit
     end function get_unit
+
+    function get_unit_str(this) result(unit_str)
+        class(Quantity),intent(in)::this
+        character(26)::unit_str
+
+        if (this%unit == unitless) then
+            unit_str = ""
+        else if (this%unit == F) then
+            unit_str = "F"
+        else if (this%unit == psia) then
+            unit_str = "psia"
+        else if (this%unit == btu_lbm) then
+            unit_str = "BTU/lbm"
+        else if (this%unit == btu_lbmR) then
+            unit_str = "BTU/lbm}\cdot\textnormal{R"
+        else
+            write(*,"(A,I3)") "Unhandled unit to string conversion: ", this%unit
+            stop "Unhandled unit to string conversion"
+        end if
+    end function get_unit_str
 
     function get_in(this, unit) result(v)
         101 FORMAT (F6.1,A,F6.1,A)
