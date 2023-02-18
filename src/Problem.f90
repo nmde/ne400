@@ -15,14 +15,10 @@ module class_Problem
         procedure::report_point,eq_T,eq_P,eq_h,eq_s
     end type Problem
 contains
-    function create_problem(num_points, unit_system, output_file, title, author, &
-            date) result(this)
+    function create_problem(num_points, unit_system, output_file) result(this)
         type(Problem)::this
         integer,intent(in)::num_points,unit_system
         character(9),intent(in)::output_file
-        character(17),intent(in)::title
-        character(13),intent(in)::author
-        character(19),intent(in)::date
         integer::io_err,i
 
         allocate(this%points(num_points))
@@ -33,19 +29,6 @@ contains
         if (io_err /= 0) then
             stop "Could not write to " // output_file
         end if
-
-        write(13,"(A)") "\documentclass{article}"
-        write(13,"(A)") ""
-        write(13,"(A)") "\title{" // title // "}"
-        write(13,"(A)") "\author{" // author // "}"
-        write(13,"(A)") "\date{" // date // "}"
-        write(13,"(A)") ""
-        write(13,"(A)") "\begin{document}"
-        write(13,"(A)") ""
-        write(13,"(A)") "\maketitle"
-        write(13,"(A)") ""
-        write(13,"(A)") "\section{}"
-        write(13,"(A)") ""
 
         do i=1,num_points
             this%points(i) = create_point(i)
