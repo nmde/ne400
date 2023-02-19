@@ -12,7 +12,7 @@ module class_Problem
     type Problem
         type(Point),allocatable::points(:)
     contains
-        procedure::report_point,eq_T,eq_P,eq_h,eq_s
+        procedure::report_point,eq_T,eq_P,eq_h_s,eq_s_s
     end type Problem
 contains
     function create_problem(num_points, unit_system, output_file) result(this)
@@ -44,7 +44,7 @@ contains
         this%points(point2)%temperature = Q(t1%get_value(), t1%get_unit())
 
         call tex_begin()
-        write(13,"(A,I2,A,I2,A,F8.3,A)") "T_{", point2, "} = T_{", point1, "} = ", t1%get_value(), tex_units(t1)
+        write(13,"(A,I2,A,I2,A)") "T_{", point2, "} = T_{", point1, "}"
         call tex_end()
     end subroutine eq_T
 
@@ -57,52 +57,54 @@ contains
         this%points(point2)%pressure = Q(p1%get_value(), p1%get_unit())
 
         call tex_begin()
-        write(13,"(A,I2,A,I2,A,F8.3,A)") "P_{", point2, "} = P_{", point1, "} = ", p1%get_value(), tex_units(p1)
+        write(13,"(A,I2,A,I2,A)") "P_{", point2, "} = P_{", point1, "}"
         call tex_end()
     end subroutine eq_P
 
-    subroutine eq_h(this, point2, point1)
+    subroutine eq_h_s(this, point2, point1)
         class(Problem),intent(inout)::this
         integer,intent(in)::point1,point2
         type(Quantity)::h1
 
-        h1 = this%points(point1)%enthalpy
-        this%points(point2)%enthalpy = Q(h1%get_value(), h1%get_unit())
+        h1 = this%points(point1)%enthalpy_s
+        this%points(point2)%enthalpy_s = Q(h1%get_value(), h1%get_unit())
 
         call tex_begin()
-        write(13,"(A,I2,A,I2,A,F8.3,A)") "h_{", point2, "} = h_{", point1, "} = ", h1%get_value(), tex_units(h1)
+        write(13,"(A,I2,A,I2,A)") "h_{", point2, "} = h_{", point1, "}"
         call tex_end()
-    end subroutine eq_h
+    end subroutine eq_h_s
 
-    subroutine eq_s(this, point2, point1)
+    subroutine eq_s_s(this, point2, point1)
         class(Problem),intent(inout)::this
         integer,intent(in)::point1,point2
         type(Quantity)::s1
 
-        s1 = this%points(point1)%entropy
-        this%points(point2)%entropy = Q(s1%get_value(), s1%get_unit())
+        s1 = this%points(point1)%entropy_s
+        this%points(point2)%entropy_s = Q(s1%get_value(), s1%get_unit())
 
         call tex_begin()
-        write(13,"(A,I2,A,I2,A,F8.3,A)") "s_{", point2, "} = s_{", point1, "} = ", s1%get_value(), tex_units(s1)
+        write(13,"(A,I2,A,I2,A)") "s_{", point2, "} = s_{", point1, "}"
         call tex_end()
-    end subroutine eq_s
+    end subroutine eq_s_s
 
     subroutine report_point(this, index)
         class(Problem),intent(in)::this
         integer,intent(in)::index
-        type(Quantity)::p,h,s,x,t
+        type(Quantity)::p,h_s,h_a,s_s,s_a,x,t
 
         t = this%points(index)%temperature
         p = this%points(index)%pressure
-        h = this%points(index)%enthalpy
-        s = this%points(index)%entropy
+        h_s = this%points(index)%enthalpy_s
+        s_s = this%points(index)%entropy_s
+        h_a = this%points(index)%enthalpy_a
+        s_a = this%points(index)%entropy_a
         x = this%points(index)%quality
 
         write(*,"(A,I3,A)") "Point ", index, ": =========================="
         write(*,"(A,F8.3,A)" ) "    T = ", t%get_value(), " " // t%get_unit_str()
         write(*,"(A,F8.3,A)" ) "    P = ", p%get_value(), " " // p%get_unit_str()
-        write(*,"(A,F8.3,A)" ) "    h = ", h%get_value(), " " // h%get_unit_str()
-        write(*,"(A,F8.3,A)" ) "    s = ", s%get_value(), " " // s%get_unit_str()
+        write(*,"(A,F8.3,A,F8.3,A)" ) "    h ideal = ", h_s%get_value(), " actual = ", h_a%get_value(), " " // h_a%get_unit_str()
+        write(*,"(A,F8.3,A,F8.3,A)" ) "    s ideal = ", s_s%get_value(), " actual = ", s_a%get_value(), " " // s_a%get_unit_str()
         write(*,"(A,F8.3,A)" ) "    x = ", x%get_value(), " " // x%get_unit_str()
     end subroutine report_point
 end module class_Problem

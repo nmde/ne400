@@ -10,44 +10,132 @@
 
 \section{}
 
+
+Cycle Efficiency:
+\begin{equation}
+\eta_{a} = \frac{\dot{W}_{htp    } / \dot{m}_{1} + \dot{W}_{ltp    } / \dot{m}_{1} + \dot{W}_{cp     } / \dot{m}_{1} + \dot{W}_{cbp    } / \dot{m}_{1} + \dot{W}_{fp1    } / \dot{m}_{1} + \dot{W}_{fp2    } / \dot{m}_{1}}{\dot{Q}_{SG1    } / \dot{m}_{1} + \dot{Q}_{SG2    } / \dot{m}_{1}}
+\end{equation}
+
+\begin{equation}
+\eta_{t} =    0.950
+\end{equation}
+
+\begin{equation}
+\eta_{p} =    0.800
+\end{equation}
+
 \begin{equation}
 x_{ 2} =   95.000\%
 \end{equation}
 
 \begin{equation}
-P_{ 2} = 1240.000\textnormal{psia                      }
+P_{ 2} = 1240.000\textnormal{ psia                      }
 \end{equation}
 
 \begin{equation}
-  h_{ 2} = (h_{f} + x_{ 2}h_{fg})_{@P 2} =  577.420 + 0.95\cdot 605.640 = 1152.778
-\textnormal{BTU/lbm                   }
+  h_{ 2,s} = (h_{f} + x_{ 2}h_{fg})_{@P 2} =  577.420 + 0.95\cdot 605.640 = 1152.778
+\textnormal{ BTU/lbm                   }
 \end{equation}
 
 \begin{equation}
-  s_{ 2} = (s_{f} + x_{ 2}s_{fg})_{@P 2} =    0.777 + 0.95\cdot   0.587 =    1.335
-\textnormal{BTU/lbm}\cdot\textnormal{R}
+  s_{ 2,s} = (s_{f} + x_{ 2}s_{fg})_{@P 2} =    0.777 + 0.95\cdot   0.587 =    1.335
+\textnormal{ BTU/lbm}\cdot\textnormal{R}
 \end{equation}
 
 \begin{equation}
-P_{ 3} = P_{ 2} = 1240.000\textnormal{psia                      }
+h_{ 2,a} = h_{ 2,s}
 \end{equation}
 
 \begin{equation}
-h_{ 3} = h_{ 2} = 1152.778\textnormal{BTU/lbm                   }
+s_{ 2,a} = s_{ 2,s}
 \end{equation}
 
 \begin{equation}
-s_{ 3} = s_{ 2} =    1.335\textnormal{BTU/lbm}\cdot\textnormal{R}
+P_{ 3} =  940.000\textnormal{ psia                      }
 \end{equation}
 
 
 HP Turbine:
 \begin{equation}
-(\dot{m}_{ 1} - \dot{m}_{ 3})h_{ 3} = \dot{m}_{ 4}h_{ 4} + (\dot{m}_{ 1} - \dot{m}_{ 3} - \dot{m}_{ 4})h_{ 5} + \dot{W}_{hpt}
+(\dot{m}_{ 1} - \dot{m}_{ 3})h_{ 3,a} = \dot{m}_{ 4}h_{ 4,a} + (\dot{m}_{ 1} - \dot{m}_{ 3} - \dot{m}_{ 4})h_{ 5,a} + \dot{W}_{hpt,a}
 \end{equation}
 
 \begin{equation}
-\frac{\dot{W}_{hpt}}{m_1} = (1 - \frac{\dot{m}_{ 3}}{\dot{m}_{ 1}})h_{ 3} - \frac{\dot{m}_{ 4}}{\dot{m}_{ 1}}h_{ 4} - (1 - \frac{\dot{m}_{ 3}}{\dot{m}_{ 1}} - \frac{\dot{m}_{ 4}}{\dot{m}_{ 1}})h_{ 5}
+\frac{\dot{W}_{hpt,a}}{m_1} = (1 - \frac{\dot{m}_{ 3}}{\dot{m}_{ 1}})h_{ 3,a} - \frac{\dot{m}_{ 4}}{\dot{m}_{ 1}}h_{ 4,a} - (1 - \frac{\dot{m}_{ 3}}{\dot{m}_{ 1}} - \frac{\dot{m}_{ 4}}{\dot{m}_{ 1}})h_{ 5,a}\end{equation}
+
+\begin{equation}
+\eta_{hpt} =    0.950 = \frac{\dot{W}_{hpt,a} / \dot{m}_{1}}{\dot{W}_{hpt,s} / \dot{m}_{1}}
+\end{equation}
+
+
+LP Turbine:
+\begin{equation}
+(\dot{m}_{ 1} - \dot{m}_{ 3} - \dot{m}_{ 4})h_{ 6,a} = \dot{m}_{ 5}h_{ 8,a} + \dot{m}_{ 6}h_{ 9,a} + (\dot{m}_{ 1} - \dot{m}_{ 3} - \dot{m}_{ 4} - \dot{m}_{ 5} - \dot{m}_{ 6})h_{10,a} + \dot{W}_{lpt,a}
+\end{equation}
+
+\begin{equation}
+\frac{\dot{W}_{lpt,a}}{m_1} = (1 - \frac{\dot{m}_{ 3}}{\dot{m}_{ 1}} - \frac{\dot{m}_{ 4}}{\dot{m}_{ 1}})h_{ 6,a} - \frac{\dot{m}_{ 5}}{\dot{m}_{ 1}}h_{ 8,a} - \frac{\dot{m}_{ 6}}{\dot{m}_{ 1}}h_{ 9,a} - (1 - \frac{\dot{m}_{ 3}}{\dot{m}_{ 1}} - \frac{\dot{m}_{ 4}}{\dot{m}_{ 1}} - \frac{\dot{m}_{ 5}}{\dot{m}_{ 1}} - \frac{\dot{m}_{ 6}}{\dot{m}_{ 1}})h_{10,a}\end{equation}
+
+\begin{equation}
+\eta_{lpt} =    0.950 = \frac{\dot{W}_{lpt,a} / \dot{m}_{1}}{\dot{W}_{lpt,s} / \dot{m}_{1}}
+\end{equation}
+
+
+Condensate Pump:
+\begin{equation}
+(\dot{m}_{ 1} - \dot{m}_{ 3} - \dot{m}_{ 4} - \dot{m}_{ 5} - \dot{m}_{ 6})h_{11,a} = (\dot{m}_{ 1} - \dot{m}_{ 3} - \dot{m}_{ 4} - \dot{m}_{ 5} - \dot{m}_{ 6})h_{12,a} + \dot{W}_{cp ,a}
+\end{equation}
+
+\begin{equation}
+-\frac{\dot{W}_{cp ,a}}{m_1} = (1 - \frac{\dot{m}_{ 3}}{\dot{m}_{ 1}} - \frac{\dot{m}_{ 4}}{\dot{m}_{ 1}} - \frac{\dot{m}_{ 5}}{\dot{m}_{ 1}} - \frac{\dot{m}_{ 6}}{\dot{m}_{ 1}})h_{12,a} - (1 - \frac{\dot{m}_{ 3}}{\dot{m}_{ 1}} - \frac{\dot{m}_{ 4}}{\dot{m}_{ 1}} - \frac{\dot{m}_{ 5}}{\dot{m}_{ 1}} - \frac{\dot{m}_{ 6}}{\dot{m}_{ 1}})h_{11,a}
+\end{equation}
+
+
+Open Heater:
+\begin{equation}
+\dot{m}_{ 6}h_{ 9,a} + (\dot{m}_{ 1} - \dot{m}_{ 3} - \dot{m}_{ 4} - \dot{m}_{ 5} - \dot{m}_{ 6})h_{12,a} + (\dot{m}_{ 3} + \dot{m}_{ 4} + \dot{m}_{ 5})h_{15,a} = \dot{m}_{ 1}h_{13,a}
+\end{equation}
+
+
+CB Pump:
+\begin{equation}
+\dot{m}_{ 1}h_{13,a} = \dot{m}_{ 1}h_{14,a} + \dot{W}_{cbp,a}
+\end{equation}
+
+\begin{equation}
+-\frac{\dot{W}_{cbp,a}}{m_1} = h_{14,a} - h_{13,a}
+\end{equation}
+
+
+Heat Exchanger 1
+\begin{equation}
+\dot{m}_{ 4}h_{17,a} + \dot{m}_{ 5}h_{ 8,a} + \dot{m}_{ 3}h_{ 7,a} + \dot{m}_{ 1}h_{14,a} = \dot{m}_{ 1}h_{16,a} + (\dot{m}_{ 3} + \dot{m}_{ 4} + \dot{m}_{ 5})h_{15,a}
+\end{equation}
+
+
+Heat Exchanger 2
+\begin{equation}
+\dot{m}_{ 1}h_{16,a} + \dot{m}_{ 4}h_{ 4,a} = \dot{m}_{ 1}h_{ 1,a} + \dot{m}_{ 4}h_{17,a}
+\end{equation}
+
+
+FP 1
+\begin{equation}
+\dot{m}_{ 2}h_{ 1,a} = \dot{m}_{ 2}h_{21,a} + \dot{W}_{fp1,a}
+\end{equation}
+
+\begin{equation}
+-\frac{\dot{W}_{fp1,a}}{m_1} = \frac{\dot{m}_{ 2}}{\dot{m}_{ 1}}h_{21,a} - \frac{\dot{m}_{ 2}}{\dot{m}_{ 1}}h_{ 1,a}
+\end{equation}
+
+
+FP 2
+\begin{equation}
+\dot{m}_{ 2}h_{ 1,a} = \dot{m}_{ 2}h_{21,a} + \dot{W}_{fp2,a}
+\end{equation}
+
+\begin{equation}
+-\frac{\dot{W}_{fp2,a}}{m_1} = \frac{\dot{m}_{ 2}}{\dot{m}_{ 1}}h_{21,a} - \frac{\dot{m}_{ 2}}{\dot{m}_{ 1}}h_{ 1,a}
 \end{equation}
 
 

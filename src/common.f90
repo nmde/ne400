@@ -4,13 +4,13 @@ module common
     implicit none
     private
 
-    public::tex_units,tex_begin,tex_end,tex_create_document,tex_end_document,tex_label
+    public::tex_units,tex_begin,tex_end,tex_create_document,tex_end_document,tex_label,tex_simple_val
 contains
     function tex_units(qu) result(str)
         type(Quantity),intent(in)::qu
-        character(39)::str
+        character(40)::str
 
-        str = "\textnormal{" // qu%get_unit_str() // "}"
+        str = "\textnormal{ " // qu%get_unit_str() // "}"
     end function tex_units
 
     subroutine tex_begin()
@@ -53,4 +53,13 @@ contains
         write(13,"(A)") ""
         write(13,"(A)") text
     end subroutine tex_label
+
+    subroutine tex_simple_val(varname, value)
+        character(8),intent(in)::varname
+        real,intent(in)::value
+
+        call tex_begin()
+        write(13,"(A,F8.3)") varname // " = ", value
+        call tex_end()
+    end subroutine tex_simple_val
 end module common
