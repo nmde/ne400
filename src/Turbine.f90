@@ -19,7 +19,7 @@ contains
     function create_Turbine(num_inputs, num_outputs, label, efficiency) result(this)
         type(Turbine)::this
         integer,intent(in)::num_inputs,num_outputs
-        character(3),intent(in)::label
+        character(*),intent(in)::label
         real,intent(in)::efficiency
 
         allocate(this%inputs(num_inputs))

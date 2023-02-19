@@ -6,16 +6,16 @@ module class_Point
     implicit none
     private
     
-    public::Point,create_point
+    public::Point,create_Point
 
     type Point
         type(Quantity)::temperature,pressure,enthalpy_s,enthalpy_a,entropy_s,entropy_a,quality
         integer::index
     contains
-        procedure::given_T,given_P,given_x,calc_h_s,calc_s_s,set_ideal,is_solved
+        procedure::given_T,given_P,given_x,calc_h_s,calc_s_s,set_ideal,is_solved,calc_x_from_h_s
     end type Point
 contains
-    function create_point(index) result(this)
+    function create_Point(index) result(this)
         integer,intent(in)::index
         type(Point)::this
 
@@ -26,7 +26,7 @@ contains
         this%entropy_s = Q(0D0, unknown)
         this%entropy_a = Q(0D0, unknown)
         this%index = index
-    end function create_point
+    end function create_Point
 
     subroutine given_T(this, value, units)
         class(Point),intent(inout)::this
@@ -90,6 +90,23 @@ contains
         call tex_end()
     end subroutine calc_s_s
 
+    subroutine calc_x_from_h_s(this)
+        class(Point),intent(inout)::this
+        type(Quantity)::hf,hfg
+
+        hf = sat_p_hf(this%pressure)
+        hfg = sat_p_hfg(this%pressure)
+
+        this%quality = this%enthalpy_s%minus(hf)
+        this%quality = this%quality%divide(hfg, unitless)
+
+        call tex_begin()
+        write(13,"(A,I2,A,I2,A,I2,A,F8.3,A,F8.3,A,F8.3,A,F8.3)") "x_{", this%index, "} = (\frac{h_{", this%index, &
+            ",s} - h_{f}}{h_fg})_{@P", this%index, "} = \frac{", this%enthalpy_s%get_value(), " - ", hf%get_value(), &
+            "}{", hfg%get_value(), "} = ", this%quality%get_value()
+        call tex_end()
+    end subroutine calc_x_from_h_s
+
     subroutine set_ideal(this)
         class(Point),intent(inout)::this
 
@@ -114,5 +131,6 @@ contains
         solved = solved .and. this%enthalpy_s%is_known()
         solved = solved .and. this%entropy_a%is_known()
         solved = solved .and. this%entropy_s%is_known()
+        solved = solved .and. this%quality%is_known()
     end function is_solved
 end module class_Point

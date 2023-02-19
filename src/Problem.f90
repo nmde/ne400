@@ -10,7 +10,7 @@ module class_Problem
     public::Problem,create_problem
 
     type Problem
-        type(Point),allocatable::points(:)
+        type(Point),allocatable::point(:)
         integer::num_points
     contains
         procedure::report_point,eq_T,eq_P,eq_h_s,eq_s_s,report_all,report_all_solved
@@ -22,7 +22,7 @@ contains
         character(9),intent(in)::output_file
         integer::io_err,i
 
-        allocate(this%points(num_points))
+        allocate(this%point(num_points))
 
         this%num_points = num_points
 
@@ -34,7 +34,7 @@ contains
         end if
 
         do i=1,num_points
-            this%points(i) = create_point(i)
+            this%point(i) = create_Point(i)
         end do
     end function create_problem
 
@@ -43,8 +43,12 @@ contains
         integer,intent(in)::point1,point2
         type(Quantity)::t1
 
-        t1 = this%points(point1)%temperature
-        this%points(point2)%temperature = Q(t1%get_value(), t1%get_unit())
+        t1 = this%point(point1)%temperature
+        this%point(point2)%temperature = Q(t1%get_value(), t1%get_unit())
+
+        if (.not. t1%is_known()) then
+            write(*,"(A,I2,A)") "**** WARNING: Using T ", point1, " before it is known!"
+        end if
 
         call tex_begin()
         write(13,"(A,I2,A,I2,A)") "T_{", point2, "} = T_{", point1, "}"
@@ -56,8 +60,12 @@ contains
         integer,intent(in)::point1,point2
         type(Quantity)::p1
 
-        p1 = this%points(point1)%pressure
-        this%points(point2)%pressure = Q(p1%get_value(), p1%get_unit())
+        p1 = this%point(point1)%pressure
+        this%point(point2)%pressure = Q(p1%get_value(), p1%get_unit())
+
+        if (.not. p1%is_known()) then
+            write(*,"(A,I2,A)") "**** WARNING: Using P ", point1, " before it is known!"
+        end if
 
         call tex_begin()
         write(13,"(A,I2,A,I2,A)") "P_{", point2, "} = P_{", point1, "}"
@@ -69,8 +77,12 @@ contains
         integer,intent(in)::point1,point2
         type(Quantity)::h1
 
-        h1 = this%points(point1)%enthalpy_s
-        this%points(point2)%enthalpy_s = Q(h1%get_value(), h1%get_unit())
+        h1 = this%point(point1)%enthalpy_s
+        this%point(point2)%enthalpy_s = Q(h1%get_value(), h1%get_unit())
+
+        if (.not. h1%is_known()) then
+            write(*,"(A,I2,A)") "**** WARNING: Using h_s ", point1, " before it is known!"
+        end if
 
         call tex_begin()
         write(13,"(A,I2,A,I2,A)") "h_{", point2, ",s} = h_{", point1, ",s}"
@@ -82,8 +94,12 @@ contains
         integer,intent(in)::point1,point2
         type(Quantity)::s1
 
-        s1 = this%points(point1)%entropy_s
-        this%points(point2)%entropy_s = Q(s1%get_value(), s1%get_unit())
+        s1 = this%point(point1)%entropy_s
+        this%point(point2)%entropy_s = Q(s1%get_value(), s1%get_unit())
+
+        if (.not. s1%is_known()) then
+            write(*,"(A,I2,A)") "*** WARNING: Using s_s ", point1, " before it is known!"
+        end if
 
         call tex_begin()
         write(13,"(A,I2,A,I2,A)") "s_{", point2, ",s} = s_{", point1, ",s}"
@@ -95,13 +111,13 @@ contains
         integer,intent(in)::index
         type(Quantity)::p,h_s,h_a,s_s,s_a,x,t
 
-        t = this%points(index)%temperature
-        p = this%points(index)%pressure
-        h_s = this%points(index)%enthalpy_s
-        s_s = this%points(index)%entropy_s
-        h_a = this%points(index)%enthalpy_a
-        s_a = this%points(index)%entropy_a
-        x = this%points(index)%quality
+        t = this%point(index)%temperature
+        p = this%point(index)%pressure
+        h_s = this%point(index)%enthalpy_s
+        s_s = this%point(index)%entropy_s
+        h_a = this%point(index)%enthalpy_a
+        s_a = this%point(index)%entropy_a
+        x = this%point(index)%quality
 
         write(*,"(A,I3,A)") "Point ", index, ": =========================="
         ! write(*,"(A,F8.3,A)" ) "    T = ", t%get_value(), " " // t%get_unit_str()
@@ -122,12 +138,15 @@ contains
 
     subroutine report_all_solved(this)
         class(Problem),intent(in)::this
-        integer::i
+        integer::i,solved_count
 
+        solved_count = 0
         do i=1,this%num_points
-            if (this%points(i)%is_solved()) then
+            if (this%point(i)%is_solved()) then
                 call report_point(this, i)
+                solved_count = solved_count + 1
             end if
         end do
+        write(*,"(A,I3,A,I3)") "Solved points: ", solved_count, " / ", this%num_points
     end subroutine report_all_solved
 end module class_Problem

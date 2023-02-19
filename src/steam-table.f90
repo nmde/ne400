@@ -39,7 +39,7 @@ contains
             write(*,"(A)") "Using imperial steam tables"
             open(unit=11,file="C:\Users\dmnev\Documents\nmde\thermo\src\imperial/pressure-table.txt", &
                 status="old",action="read",iostat=io_stat)
-            ptable_rows = 21
+            ptable_rows = 31
         end if
 
         if (io_stat /= 0) then
@@ -79,6 +79,8 @@ contains
             read(12,"(F5.1,F8.3)") temperature_table(i,1), &
                 temperature_table(i,2)
         end do
+
+        write(*,"(A,F8.3)") "Sanity check: Last read row = ", pressure_table(ptable_rows, 1)
     end subroutine initialize_steam_tables
 
     function interpolate(x, y_0, y_1, x_0, x_1) result(y)

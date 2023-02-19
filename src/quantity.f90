@@ -52,7 +52,7 @@ contains
         else if (this%unit == unknown) then
             unit_str = "UNKNOWN"
         else if (this%unit == F) then
-            unit_str = "F"
+            unit_str = "\(^{\circ}\)F"
         else if (this%unit == psia) then
             unit_str = "psia"
         else if (this%unit == btu_lbm) then
@@ -97,7 +97,7 @@ contains
         type(Quantity)::re
 
         if (this%get_unit() == 0 .or. otherQuantity%get_unit() == 0) then
-            write(*,"(A)") "Warning: Operation with unknown quantities"
+            write(*,"(A)") "*** WARNING: Operation with unknown quantities"
         end if
 
         if (this%get_unit() /= otherQuantity%get_unit()) then
@@ -116,7 +116,7 @@ contains
         type(Quantity)::re
 
         if (this%get_unit() == 0 .or. otherQuantity%get_unit() == 0) then
-            write(*,"(A)") "Warning: Operation with unknown quantities"
+            write(*,"(A)") "*** WARNING: Operation with unknown quantities"
         end if
 
         if (this%get_unit() /= otherQuantity%get_unit()) then
@@ -136,7 +136,7 @@ contains
         type(Quantity)::re
 
         if (this%get_unit() == 0 .or. otherQuantity%get_unit() == 0) then
-            write(*,"(A)") "Warning: Operation with unknown quantities"
+            write(*,"(A)") "*** WARNING: Operation with unknown quantities"
         end if
 
         ! TODO: automatically determine units
@@ -151,7 +151,7 @@ contains
         type(Quantity)::re
 
         if (this%get_unit() == 0 .or. otherQuantity%get_unit() == 0) then
-            write(*,"(A)") "Warning: Operation with unknown quantities"
+            write(*,"(A)") "*** WARNING: Operation with unknown quantities"
         end if
 
         re = Q(this%get_value() / otherQuantity%get_value(), output_units)
