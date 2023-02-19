@@ -9,10 +9,11 @@ module class_Point
     public::Point,create_Point
 
     type Point
-        type(Quantity)::temperature,pressure,enthalpy_s,enthalpy_a,entropy_s,entropy_a,quality
+        type(Quantity)::temperature,pressure,enthalpy_s,enthalpy_a,entropy_s,entropy_a,quality_s,quality_a
         integer::index
     contains
-        procedure::given_T,given_P,given_x,calc_h_s,calc_s_s,set_ideal,is_solved,calc_x_from_h_s
+        procedure::given_T,given_P,given_x_s,calc_h_s,calc_s_s,set_ideal,is_solved,calc_x_s_from_h_s, &
+        calc_x_s_from_s_s
     end type Point
 contains
     function create_Point(index) result(this)
@@ -50,15 +51,15 @@ contains
         call tex_end()
     end subroutine given_P
 
-    subroutine given_x(this, value)
+    subroutine given_x_s(this, value)
         class(Point),intent(inout)::this
         real,intent(in)::value
 
-        this%quality = Q(real(value, 8), unitless)
+        this%quality_s = Q(real(value, 8), unitless)
         call tex_begin()
-        write(13,"(A,I2,A,F8.3,A)") "x_{", this%index, "} = ", value * 100, "\%"
+        write(13,"(A,I2,A,F8.3,A)") "x_{", this%index, ",s} = ", value * 100, "\%"
         call tex_end()
-    end subroutine given_x
+    end subroutine given_x_s
 
     subroutine calc_h_s(this)
         class(Point),intent(inout)::this
@@ -67,10 +68,10 @@ contains
         hf = sat_p_hf(this%pressure)
         hfg = sat_p_hfg(this%pressure)
 
-        this%enthalpy_s = hf%plus(this%quality%times(hfg, hfg%get_unit()))
+        this%enthalpy_s = hf%plus(this%quality_s%times(hfg, hfg%get_unit()))
         call tex_begin()
         write(13,"(A,I2,A,I2,A,I2,A,F8.3,A,F4.2,A,F8.3,A,F8.3)") "  h_{", this%index, ",s} = (h_{f} + x_{", this%index, &
-            "}h_{fg})_{@P", this%index, "} = ", hf%get_value(), " + ", this%quality%get_value(), "\cdot", &
+            "}h_{fg})_{@P", this%index, "} = ", hf%get_value(), " + ", this%quality_s%get_value(), "\cdot", &
             hfg%get_value(), " = ", this%enthalpy_s%get_value(), tex_units(this%enthalpy_s)
         call tex_end()
     end subroutine calc_h_s
@@ -82,30 +83,55 @@ contains
         sf = sat_p_sf(this%pressure)
         sfg = sat_p_sfg(this%pressure)
 
-        this%entropy_s = sf%plus(this%quality%times(sfg, sfg%get_unit()))
+        this%entropy_s = sf%plus(this%quality_s%times(sfg, sfg%get_unit()))
         call tex_begin()
         write(13,"(A,I2,A,I2,A,I2,A,F8.3,A,F4.2,A,F8.3,A,F8.3)") "  s_{", this%index, ",s} = (s_{f} + x_{", this%index, &
-            "}s_{fg})_{@P", this%index, "} = ", sf%get_value(), " + ", this%quality%get_value(), "\cdot", &
+            "}s_{fg})_{@P", this%index, "} = ", sf%get_value(), " + ", this%quality_s%get_value(), "\cdot", &
             sfg%get_value(), " = ", this%entropy_s%get_value(), tex_units(this%entropy_s)
         call tex_end()
     end subroutine calc_s_s
 
-    subroutine calc_x_from_h_s(this)
+    subroutine calc_x_s_from_h_s(this)
         class(Point),intent(inout)::this
         type(Quantity)::hf,hfg
 
         hf = sat_p_hf(this%pressure)
         hfg = sat_p_hfg(this%pressure)
 
-        this%quality = this%enthalpy_s%minus(hf)
-        this%quality = this%quality%divide(hfg, unitless)
+        this%quality_s = this%enthalpy_s%minus(hf)
+        this%quality_s = this%quality_s%divide(hfg, unitless)
+
+        if (this%quality_s%get_value() > 1) then
+            write(*,"(A,I2)") "**** WARNING: Quality > 1 at point ", this%index
+        end if
 
         call tex_begin()
-        write(13,"(A,I2,A,I2,A,I2,A,F8.3,A,F8.3,A,F8.3,A,F8.3)") "x_{", this%index, "} = (\frac{h_{", this%index, &
+        write(13,"(A,I2,A,I2,A,I2,A,F8.3,A,F8.3,A,F8.3,A,F8.3)") "x_{", this%index, ".s} = (\frac{h_{", this%index, &
             ",s} - h_{f}}{h_fg})_{@P", this%index, "} = \frac{", this%enthalpy_s%get_value(), " - ", hf%get_value(), &
-            "}{", hfg%get_value(), "} = ", this%quality%get_value()
+            "}{", hfg%get_value(), "} = ", this%quality_s%get_value()
         call tex_end()
-    end subroutine calc_x_from_h_s
+    end subroutine calc_x_s_from_h_s
+    
+    subroutine calc_x_s_from_s_s(this)
+        class(Point),intent(inout)::this
+        type(Quantity)::sf,sfg
+
+        sf = sat_p_sf(this%pressure)
+        sfg = sat_p_sfg(this%pressure)
+
+        this%quality_s = this%entropy_s%minus(sf)
+        this%quality_s = this%entropy_s%divide(sfg, unitless)
+
+        if (this%quality_s%get_value() > 1) then
+            write(*,"(A,I2)") "**** WARNING: Quality > 1 at point ", this%index
+        end if
+
+        call tex_begin()
+        write(13,"(A,I2,A,I2,A,I2,A,F8.3,A,F8.3,A,F8.3,A,F8.3)") "x_{", this%index, ".s} = (\frac{s_{", this%index, &
+            ",s} - s_{f}}{s_fg})_{@P", this%index, "} = \frac{", this%entropy_s%get_value(), " - ", sf%get_value(), &
+            "}{", sfg%get_value(), "} = ", this%quality_s%get_value()
+        call tex_end()
+    end subroutine calc_x_s_from_s_s
 
     subroutine set_ideal(this)
         class(Point),intent(inout)::this
@@ -115,9 +141,14 @@ contains
         write(13,"(A,I2,A,I2,A)") "h_{", this%index, ",a} = h_{", this%index, ",s}"
         call tex_end()
 
-        call tex_begin()
         this%entropy_a = this%entropy_s
+        call tex_begin()
         write(13,"(A,I2,A,I2,A)") "s_{", this%index, ",a} = s_{", this%index, ",s}"
+        call tex_end()
+        
+        this%quality_a = this%quality_s
+        call tex_begin()
+        write(13,"(A,I2,A,I2,A)") "x_{", this%index, ",a} = x_{", this%index, ",s}"
         call tex_end()
     end subroutine set_ideal
 
@@ -127,10 +158,11 @@ contains
 
         solved = .true.
         solved = solved .and. this%pressure%is_known()
-        solved = solved .and. this%enthalpy_a%is_known()
+        !solved = solved .and. this%enthalpy_a%is_known()
         solved = solved .and. this%enthalpy_s%is_known()
-        solved = solved .and. this%entropy_a%is_known()
+        !solved = solved .and. this%entropy_a%is_known()
         solved = solved .and. this%entropy_s%is_known()
-        solved = solved .and. this%quality%is_known()
+        solved = solved .and. this%quality_s%is_known()
+        !solved = solved .and. this%quality_a%is_known()
     end function is_solved
 end module class_Point

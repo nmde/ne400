@@ -13,7 +13,7 @@ module class_Turbine
         character(3)::label
         real::efficiency
     contains
-        procedure::add_input,add_output,print
+        procedure::add_input,add_output,print,solve_ideal
     end type Turbine
 contains
     function create_Turbine(num_inputs, num_outputs, label, efficiency) result(this)
@@ -115,4 +115,20 @@ contains
         call print_equation(this, 0)
         write(13,"(A)") "}{\dot{W}_{" // this%label // ",s} / \dot{m}_{1}}"
     end subroutine print_efficiency
+
+    ! TODO
+    function solve_ideal(this) result(work)
+        class(Turbine),intent(in)::this
+        real*8::work
+        integer::i
+
+        work = 0
+        do i=1,this%num_inputs
+
+        end do
+
+        call tex_begin()
+        write(13,"(A)",advance="no") "\frac{\dot{W}_{" // this%label // ",s}}{m_1} = "
+        call tex_end()
+    end function solve_ideal
 end module class_Turbine

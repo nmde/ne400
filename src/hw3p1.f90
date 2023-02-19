@@ -20,7 +20,7 @@ contains
         type(HeatExchanger)::open_heater,he1,he2,rh
         type(Efficiency)::cycle_efficiency
         type(MassFlow)::m1,m2,m3,m4,m5,m6,mp,mc
-        real::turbine_efficiency,pump_efficiency
+        real::turbine_efficiency,pump_efficiency,Whpt
 
         p = create_problem(21, 1, "hw3p1.tex")
         call tex_create_document("NE 400 Homework 3", "Daniel Nevius", "February 20th, 2023")
@@ -61,12 +61,8 @@ contains
         call hpt%add_output(create_Flow(3, (/m1,m3,m4/), p%point(5)))
         call hpt%print()
 
-        ! Point 1
-        call p%point(1)%given_T(480.0, F)
-        call p%point(1)%given_P(580.0, psia)
-
         ! Point 2
-        call p%point(2)%given_x(0.95)
+        call p%point(2)%given_x_s(0.95)
         call p%point(2)%given_P(1240.0, psia)
         call p%point(2)%calc_h_s()
         call p%point(2)%calc_s_s()
@@ -75,17 +71,25 @@ contains
         ! Point 3
         call p%point(3)%given_P(940.0, psia)
         call p%eq_h_s(3, 2)
-        call p%point(3)%calc_x_from_h_s()
+        call p%point(3)%calc_x_s_from_h_s()
         call p%point(3)%calc_s_s()
-        call p%report_point(3)
+        call p%point(3)%set_ideal()
 
         ! Point 4
         call p%point(4)%given_P(385.0, psia)
         call p%eq_s_s(4, 3)
+        call p%point(4)%calc_x_s_from_s_s()
+        call p%point(4)%calc_h_s()
 
         ! Point 5
         call p%point(5)%given_P(160.0, psia)
         call p%eq_s_s(5, 3)
+        call p%point(5)%calc_x_s_from_s_s()
+        call p%point(5)%calc_h_s()
+
+        ! Point 1
+        call p%point(1)%given_T(480.0, F)
+        call p%point(1)%given_P(580.0, psia)
 
         ! Point 6
         call p%point(6)%given_T(560.0, F)

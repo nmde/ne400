@@ -11,7 +11,7 @@ module class_Flow
         type(Point)::point
         integer::num_masses,mode
     contains
-        procedure::print,print_divided
+        procedure::print,print_divided,print_masses
     end type Flow
 
     type MassFlow
@@ -53,16 +53,9 @@ contains
         label = this%mass_flows(index)%label
     end function m
 
-    subroutine print(this, in_mode)
+    subroutine print_masses(this)
         class(Flow),intent(in)::this
-        integer,intent(in),optional::in_mode
-        integer::j,mode
-
-        if (present(in_mode)) then
-            mode = in_mode
-        else
-            mode = 0
-        end if
+        integer::j
 
         if (this%num_masses > 1) then
             write(13,"(A)",advance="no") "("
@@ -79,6 +72,20 @@ contains
         if (this%num_masses > 1) then
             write(13,"(A)",advance="no") ")"
         end if
+    end subroutine print_masses
+
+    subroutine print(this, in_mode)
+        class(Flow),intent(in)::this
+        integer,intent(in),optional::in_mode
+        integer::mode
+
+        if (present(in_mode)) then
+            mode = in_mode
+        else
+            mode = 0
+        end if
+
+        call print_masses(this)
         write(13,"(A,I2)",advance="no") "h_{", this%point%index
         if (mode == 1) then
             write(13,"(A)",advance="no") ",s}"

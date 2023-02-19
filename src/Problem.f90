@@ -109,7 +109,7 @@ contains
     subroutine report_point(this, index)
         class(Problem),intent(in)::this
         integer,intent(in)::index
-        type(Quantity)::p,h_s,h_a,s_s,s_a,x,t
+        type(Quantity)::p,h_s,h_a,s_s,s_a,x_s,x_a,t
 
         t = this%point(index)%temperature
         p = this%point(index)%pressure
@@ -117,14 +117,15 @@ contains
         s_s = this%point(index)%entropy_s
         h_a = this%point(index)%enthalpy_a
         s_a = this%point(index)%entropy_a
-        x = this%point(index)%quality
+        x_s = this%point(index)%quality_s
+        x_a = this%point(index)%quality_a
 
         write(*,"(A,I3,A)") "Point ", index, ": =========================="
         ! write(*,"(A,F8.3,A)" ) "    T = ", t%get_value(), " " // t%get_unit_str()
         write(*,"(A,F8.3,A)" ) "    P = ", p%get_value(), " " // p%get_unit_str()
         write(*,"(A,F8.3,A,F8.3,A)" ) "    h ideal = ", h_s%get_value(), ", actual = ", h_a%get_value(), " " // h_a%get_unit_str()
         write(*,"(A,F8.3,A,F8.3,A)" ) "    s ideal = ", s_s%get_value(), ", actual = ", s_a%get_value(), " " // s_a%get_unit_str()
-        write(*,"(A,F8.3,A)" ) "    x = ", x%get_value(), " " // x%get_unit_str()
+        write(*,"(A,F8.3,A,F8.3,A)" ) "    x ideal = ", x_s%get_value(), ", actual = ", x_a%get_value(), " " // x_a%get_unit_str()
     end subroutine report_point
 
     subroutine report_all(this)
