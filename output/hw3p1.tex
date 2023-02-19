@@ -10,6 +10,10 @@
 
 \section{}
 
+\begin{equation}\label{interpolation}
+y = y_1 + (x - x_1) \frac{y_2 - y_1}{x_2 - x_1}
+\end{equation}
+
 
 Cycle Efficiency:
 \begin{equation}
@@ -135,15 +139,38 @@ x_{ 5.s} = (\frac{s_{ 5,s} - s_{f}}{s_fg})_{@P 5} = \frac{   1.356 -    0.521}{ 
 \end{equation}
 
 \begin{equation}
-T_{ 1} =  480.000\textnormal{ \(^{\circ}\)F             }
-\end{equation}
-
-\begin{equation}
-P_{ 1} =  580.000\textnormal{ psia                      }
-\end{equation}
-
-\begin{equation}
 T_{ 6} =  560.000\textnormal{ \(^{\circ}\)F             }
+\end{equation}
+
+\begin{equation}
+P_{ 6} = P_{ 5}
+\end{equation}
+
+Interpolating using equation (\ref{interpolation}):
+\begin{equation}
+  h_{ 6,s} = 1304.760\textnormal{ BTU/lbm                   }
+\end{equation}
+
+\begin{equation}
+  s_{ 6,s} =    1.684\textnormal{ BTU/lbm}\cdot\textnormal{R}
+\end{equation}
+
+\begin{equation}
+P_{ 7} = P_{ 2}
+\end{equation}
+
+\begin{equation}
+  x_{ 7,s} =    0.000\textnormal{                           }
+\end{equation}
+
+\begin{equation}
+  h_{ 7,s} = (h_{f} + x_{ 7}h_{fg})_{@P 7} =  577.420 + 0.00\cdot 605.640 =  577.420
+\textnormal{ BTU/lbm                   }
+\end{equation}
+
+\begin{equation}
+  s_{ 7,s} = (s_{f} + x_{ 7}s_{fg})_{@P 7} =    0.777 + 0.00\cdot   0.587 =    0.777
+\textnormal{ BTU/lbm}\cdot\textnormal{R}
 \end{equation}
 
 \begin{equation}
@@ -155,11 +182,29 @@ s_{ 8,s} = s_{ 6,s}
 \end{equation}
 
 \begin{equation}
+x_{ 8.s} = (\frac{s_{ 8,s} - s_{f}}{s_fg})_{@P 8} = \frac{   1.684 -    0.483}{   1.111} =    1.515
+\end{equation}
+
+\begin{equation}
+  h_{ 8,s} = (h_{f} + x_{ 8}h_{fg})_{@P 8} =  305.800 + 1.52\cdot 883.100 = 1643.758
+\textnormal{ BTU/lbm                   }
+\end{equation}
+
+\begin{equation}
 P_{ 9} =   25.000\textnormal{ psia                      }
 \end{equation}
 
 \begin{equation}
-s_{ 8,s} = s_{ 6,s}
+s_{ 9,s} = s_{ 6,s}
+\end{equation}
+
+\begin{equation}
+x_{ 9.s} = (\frac{s_{ 9,s} - s_{f}}{s_fg})_{@P 9} = \frac{   1.684 -    0.352}{   1.364} =    1.235
+\end{equation}
+
+\begin{equation}
+  h_{ 9,s} = (h_{f} + x_{ 9}h_{fg})_{@P 9} =  207.585 + 1.23\cdot 952.650 = 1383.946
+\textnormal{ BTU/lbm                   }
 \end{equation}
 
 \begin{equation}
@@ -168,6 +213,97 @@ P_{10} =    2.000\textnormal{ psia                      }
 
 \begin{equation}
 s_{10,s} = s_{ 6,s}
+\end{equation}
+
+\begin{equation}
+x_{10.s} = (\frac{s_{10,s} - s_{f}}{s_fg})_{@P10} = \frac{   1.684 -    0.158}{   1.786} =    0.943
+\end{equation}
+
+\begin{equation}
+  h_{10,s} = (h_{f} + x_{10}h_{fg})_{@P10} =   80.340 + 0.94\cdot1027.300 = 1048.712
+\textnormal{ BTU/lbm                   }
+\end{equation}
+
+\begin{equation}
+P_{17} = P_{ 4}
+\end{equation}
+
+\begin{equation}
+  x_{17,s} =    0.000\textnormal{                           }
+\end{equation}
+
+\begin{equation}
+  h_{17,s} = (h_{f} + x_{17}h_{fg})_{@P17} =  419.880 + 0.00\cdot 784.540 =  419.880
+\textnormal{ BTU/lbm                   }
+\end{equation}
+
+\begin{equation}
+  s_{17,s} = (s_{f} + x_{17}s_{fg})_{@P17} =    0.617 + 0.00\cdot   0.871 =    0.617
+\textnormal{ BTU/lbm}\cdot\textnormal{R}
+\end{equation}
+
+
+Heat Exchanger 2
+\begin{equation}
+\dot{m}_{ 1}h_{16,s} + \dot{m}_{ 4}h_{ 4,s} = \dot{m}_{ 1}h_{ 1,s} + \dot{m}_{ 4}h_{17,s}
+\end{equation}
+
+\begin{equation}
+h_{16,s} + \frac{\dot{m}_{ 4}}{\dot{m}_{ 1}}h_{ 4,s} = h_{ 1,s} + \frac{\dot{m}_{ 4}}{\dot{m}_{ 1}}h_{17,s}
+\end{equation}
+
+\begin{equation}
+\frac{\dot{m}_{4}}{\dot{m}_{1}} = \frac{h_{1,s} - h_{16,s}}{h_{4,s} - h_{17,s}}
+\end{equation}
+
+
+Reheater:
+\begin{equation}
+\dot{m}_{ 3}h_{ 2,s} + (\dot{m}_{ 1} - \dot{m}_{ 3} - \dot{m}_{ 4})h_{ 5,s} = \dot{m}_{ 3}h_{ 7,s} + (\dot{m}_{ 1} - \dot{m}_{ 3} - \dot{m}_{ 4})h_{ 6,s}
+\end{equation}
+
+\begin{equation}
+\frac{\dot{m}_{ 3}}{\dot{m}_{ 1}}h_{ 2,s} + (1 - \frac{\dot{m}_{ 3}}{\dot{m}_{ 1}} - \frac{\dot{m}_{ 4}}{\dot{m}_{ 1}})h_{ 5,s} = \frac{\dot{m}_{ 3}}{\dot{m}_{ 1}}h_{ 7,s} + (1 - \frac{\dot{m}_{ 3}}{\dot{m}_{ 1}} - \frac{\dot{m}_{ 4}}{\dot{m}_{ 1}})h_{ 6,s}
+\end{equation}
+
+\begin{equation}
+\frac{\dot{m}_{3}}{\dot{m}_{1}} = -\frac{(\frac{\dot{m}_{4}}{\dot{m}_{ 1}} - 1)(h_{6,s} - h_{5,s})}{h_{6,s} + h_{2,s} - h_{5,s} - h_{7,s}}
+\end{equation}
+
+
+Heat Exchanger 1
+\begin{equation}
+\dot{m}_{ 1}h_{14,s} + \dot{m}_{ 3}h_{ 7,s} + \dot{m}_{ 4}h_{17,s} + \dot{m}_{ 5}h_{ 8,s} = \dot{m}_{ 1}h_{16,s} + (\dot{m}_{ 3} + \dot{m}_{ 4} + \dot{m}_{ 5})h_{15,s}
+\end{equation}
+
+\begin{equation}
+h_{14,s} + \frac{\dot{m}_{ 3}}{\dot{m}_{ 1}}h_{ 7,s} + \frac{\dot{m}_{ 4}}{\dot{m}_{ 1}}h_{17,s} + \frac{\dot{m}_{ 5}}{\dot{m}_{ 1}}h_{ 8,s} = h_{16,s} + (\frac{\dot{m}_{ 3}}{\dot{m}_{ 1}} + \frac{\dot{m}_{ 4}}{\dot{m}_{ 1}} + \frac{\dot{m}_{ 5}}{\dot{m}_{ 1}})h_{15,s}
+\end{equation}
+
+\begin{equation}
+\frac{\dot{m}_{5}}{\dot{m}_{1}} = \frac{\frac{\dot{m}_{3}}{\dot{m}_{1}}(h_{15,s} - h_{7,s}) + \frac{\dot{m}_{4}}{\dot{m}_{1}}h_{15,s} - \frac{\dot{m}_{4}}{\dot{m}_{1}}h_{17,s} - h_{14,s} + h_{16,s}}{h_{8,s} - h_{15,s}}
+\end{equation}
+
+
+Open Heater:
+\begin{equation}
+\dot{m}_{ 6}h_{ 9,s} + (\dot{m}_{ 1} - \dot{m}_{ 3} - \dot{m}_{ 4} - \dot{m}_{ 5} - \dot{m}_{ 6})h_{12,s} + (\dot{m}_{ 3} + \dot{m}_{ 4} + \dot{m}_{ 5})h_{15,s} = \dot{m}_{ 1}h_{13,s}
+\end{equation}
+
+\begin{equation}
+\frac{\dot{m}_{ 6}}{\dot{m}_{ 1}}h_{ 9,s} + (1 - \frac{\dot{m}_{ 3}}{\dot{m}_{ 1}} - \frac{\dot{m}_{ 4}}{\dot{m}_{ 1}} - \frac{\dot{m}_{ 5}}{\dot{m}_{ 1}} - \frac{\dot{m}_{ 6}}{\dot{m}_{ 1}})h_{12,s} + (\frac{\dot{m}_{ 3}}{\dot{m}_{ 1}} + \frac{\dot{m}_{ 4}}{\dot{m}_{ 1}} + \frac{\dot{m}_{ 5}}{\dot{m}_{ 1}})h_{15,s} = h_{13,s}
+\end{equation}
+
+\begin{equation}
+\frac{\dot{m}_{ 6}}{\dot{m}_{ 1}} = \frac{h_{12,s}(\frac{\dot{m}_{3}}{\dot{m}_{1}} + \frac{\dot{m}_{4}}{\dot{m}_{1}} + \frac{\dot{m}_{5}}{\dot{m}_{1}} - 1) - h_{15,s}(\frac{\dot{m}_{3}}{\dot{m}_{1}} + \frac{\dot{m}_{4}}{\dot{m}_{1}} + \frac{\dot{m}_{5}}{\dot{m}_{1}}) + h_{13,s}}{h_{9,s} - h_{12,s}}
+\end{equation}
+
+\begin{equation}
+T_{ 1} =  480.000\textnormal{ \(^{\circ}\)F             }
+\end{equation}
+
+\begin{equation}
+P_{ 1} =  580.000\textnormal{ psia                      }
 \end{equation}
 
 \begin{equation}
@@ -209,12 +345,6 @@ P_{20} = 2350.000\textnormal{ psia                      }
 \end{equation}
 
 
-Reheater:
-\begin{equation}
-\dot{m}_{ 3}h_{ 2,a} + (\dot{m}_{ 1} - \dot{m}_{ 3} - \dot{m}_{ 4})h_{ 5,a} = \dot{m}_{ 3}h_{ 7,a} + (\dot{m}_{ 1} - \dot{m}_{ 3} - \dot{m}_{ 4})h_{ 6,a}
-\end{equation}
-
-
 LP Turbine:
 \begin{equation}
 (\dot{m}_{ 1} - \dot{m}_{ 3} - \dot{m}_{ 4})h_{ 6,a} = \dot{m}_{ 5}h_{ 8,a} + \dot{m}_{ 6}h_{ 9,a} + (\dot{m}_{ 1} - \dot{m}_{ 3} - \dot{m}_{ 4} - \dot{m}_{ 5} - \dot{m}_{ 6})h_{10,a} + \dot{W}_{lpt,a}
@@ -249,12 +379,6 @@ Condensate Pump:
 \end{equation}
 
 
-Open Heater:
-\begin{equation}
-\dot{m}_{ 6}h_{ 9,a} + (\dot{m}_{ 1} - \dot{m}_{ 3} - \dot{m}_{ 4} - \dot{m}_{ 5} - \dot{m}_{ 6})h_{12,a} + (\dot{m}_{ 3} + \dot{m}_{ 4} + \dot{m}_{ 5})h_{15,a} = \dot{m}_{ 1}h_{13,a}
-\end{equation}
-
-
 CB Pump:
 \begin{equation}
 \dot{m}_{ 1}h_{13,a} = \dot{m}_{ 1}h_{14,a} + \dot{W}_{cbp,a}
@@ -269,18 +393,6 @@ CB Pump:
 \begin{equation}
 \eta_{cbp} =    0.800 = \frac{\dot{W}_{cbp,a} / \dot{m}_{1}}{\dot{W}_{cbp,s} / \dot{m}_{1}} = \frac{
 h_{14,a} - h_{13,a}}{\dot{W}_{cbp,s} / \dot{m}_{1}}
-\end{equation}
-
-
-Heat Exchanger 1
-\begin{equation}
-\dot{m}_{ 1}h_{14,a} + \dot{m}_{ 3}h_{ 7,a} + \dot{m}_{ 4}h_{17,a} + \dot{m}_{ 5}h_{ 8,a} = \dot{m}_{ 1}h_{16,a} + (\dot{m}_{ 3} + \dot{m}_{ 4} + \dot{m}_{ 5})h_{15,a}
-\end{equation}
-
-
-Heat Exchanger 2
-\begin{equation}
-\dot{m}_{ 1}h_{16,a} + \dot{m}_{ 4}h_{ 4,a} = \dot{m}_{ 1}h_{ 1,a} + \dot{m}_{ 4}h_{17,a}
 \end{equation}
 
 

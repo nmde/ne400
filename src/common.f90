@@ -13,8 +13,16 @@ contains
         str = "\textnormal{ " // qu%get_unit_str() // "}"
     end function tex_units
 
-    subroutine tex_begin()
-        write(13,"(A)") "\begin{equation}"
+    subroutine tex_begin(label)
+        character(*),optional,intent(in)::label
+
+        write(13,"(A)",advance="no") "\begin{equation}"
+
+        if (present(label)) then
+            write(13,"(A)") "\label{" // label // "}"
+        else
+            write(13,"(A)") ""
+        end if
     end subroutine tex_begin
 
     subroutine tex_end()

@@ -52,14 +52,31 @@ contains
             if (i > 1) then
                 write(13,"(A)",advance="no") " + "
             end if
-            call this%inputs(i)%print()
+            call this%inputs(i)%print(1)
         end do
         write(13,"(A)",advance="no") " = "
         do i=1,this%num_outputs
             if (i > 1) then
                 write(13,"(A)",advance="no") " + "
             end if
-            call this%outputs(i)%print()
+            call this%outputs(i)%print(1)
+        end do
+        write(13,"(A)") ""
+        call tex_end()
+
+        call tex_begin()
+        do i=1,this%num_inputs
+            if (i > 1) then
+                write(13,"(A)",advance="no") " + "
+            end if
+            call this%inputs(i)%print_divided(1, 1)
+        end do
+        write(13,"(A)",advance="no") " = "
+        do i=1,this%num_outputs
+            if (i > 1) then
+                write(13,"(A)",advance="no") " + "
+            end if
+            call this%outputs(i)%print_divided(1, 1)
         end do
         write(13,"(A)") ""
         call tex_end()

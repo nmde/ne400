@@ -13,7 +13,7 @@ module class_Point
         integer::index
     contains
         procedure::given_T,given_P,given_x_s,calc_h_s,calc_s_s,set_ideal,is_solved,calc_x_s_from_h_s, &
-        calc_x_s_from_s_s
+            calc_x_s_from_s_s,set_h_s,set_s_s,set_x_s
     end type Point
 contains
     function create_Point(index) result(this)
@@ -76,6 +76,17 @@ contains
         call tex_end()
     end subroutine calc_h_s
 
+    subroutine set_h_s(this, value, unit)
+        class(Point),intent(inout)::this
+        real,intent(in)::value
+        integer,intent(in)::unit
+
+        this%enthalpy_s = Q(real(value, 8), unit)
+        call tex_begin()
+        write(13,"(A,I2,A,F8.3,A)") "  h_{", this%index, ",s} = ", this%enthalpy_s%get_value(), tex_units(this%enthalpy_s)
+        call tex_end()
+    end subroutine set_h_s
+
     subroutine calc_s_s(this)
         class(Point),intent(inout)::this
         type(Quantity)::sf,sfg
@@ -90,6 +101,17 @@ contains
             sfg%get_value(), " = ", this%entropy_s%get_value(), tex_units(this%entropy_s)
         call tex_end()
     end subroutine calc_s_s
+
+    subroutine set_s_s(this, value, unit)
+        class(Point),intent(inout)::this
+        real,intent(in)::value
+        integer,intent(in)::unit
+
+        this%entropy_s = Q(real(value, 8), unit)
+        call tex_begin()
+        write(13,"(A,I2,A,F8.3,A)") "  s_{", this%index, ",s} = ", this%entropy_s%get_value(), tex_units(this%entropy_s)
+        call tex_end()
+    end subroutine set_s_s
 
     subroutine calc_x_s_from_h_s(this)
         class(Point),intent(inout)::this
@@ -133,6 +155,16 @@ contains
         call tex_end()
     end subroutine calc_x_s_from_s_s
 
+    subroutine set_x_s(this, value)
+        class(Point),intent(inout)::this
+        real,intent(in)::value
+
+        this%quality_s = Q(real(value, 8), unitless)
+        call tex_begin()
+        write(13,"(A,I2,A,F8.3,A)") "  x_{", this%index, ",s} = ", this%quality_s%get_value(), tex_units(this%quality_s)
+        call tex_end()
+    end subroutine set_x_s
+
     subroutine set_ideal(this)
         class(Point),intent(inout)::this
 
@@ -162,7 +194,5 @@ contains
         solved = solved .and. this%enthalpy_s%is_known()
         !solved = solved .and. this%entropy_a%is_known()
         solved = solved .and. this%entropy_s%is_known()
-        solved = solved .and. this%quality_s%is_known()
-        !solved = solved .and. this%quality_a%is_known()
     end function is_solved
 end module class_Point

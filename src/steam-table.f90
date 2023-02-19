@@ -289,7 +289,8 @@ contains
         type(Quantity),intent(in)::value
 
         if (value%get_unit() == 0) then
-            stop "Attempting to use unknown value"
+            write(*,"(A,F8.3)") "Attempting to use unknown value: ", value%get_value()
+            stop "Cannot query steam table with unknown value"
         endif
     end subroutine verify_value
 end module SteamTable
