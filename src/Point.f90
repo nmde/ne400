@@ -12,7 +12,7 @@ module class_Point
         type(Quantity)::temperature,pressure,enthalpy_s,enthalpy_a,entropy_s,entropy_a,quality
         integer::index
     contains
-        procedure::given_T,given_P,given_x,calc_h_s,calc_s_s,is_ideal
+        procedure::given_T,given_P,given_x,calc_h_s,calc_s_s,set_ideal,is_solved
     end type Point
 contains
     function create_point(index) result(this)
@@ -90,7 +90,7 @@ contains
         call tex_end()
     end subroutine calc_s_s
 
-    subroutine is_ideal(this)
+    subroutine set_ideal(this)
         class(Point),intent(inout)::this
 
         this%enthalpy_a = this%enthalpy_s
@@ -99,8 +99,20 @@ contains
         call tex_end()
 
         call tex_begin()
-        this%entropy_a = this%enthalpy_s
+        this%entropy_a = this%entropy_s
         write(13,"(A,I2,A,I2,A)") "s_{", this%index, ",a} = s_{", this%index, ",s}"
         call tex_end()
-    end subroutine
+    end subroutine set_ideal
+
+    function is_solved(this) result(solved)
+        class(Point),intent(in)::this
+        logical::solved
+
+        solved = .true.
+        solved = solved .and. this%pressure%is_known()
+        solved = solved .and. this%enthalpy_a%is_known()
+        solved = solved .and. this%enthalpy_s%is_known()
+        solved = solved .and. this%entropy_a%is_known()
+        solved = solved .and. this%entropy_s%is_known()
+    end function is_solved
 end module class_Point

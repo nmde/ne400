@@ -16,7 +16,7 @@ module class_Quantity
         integer::unit
 
     contains
-        procedure::get_value,get_unit,get_in,plus,minus,times,divide,get_unit_str
+        procedure::get_value,get_unit,get_in,plus,minus,times,divide,get_unit_str,is_known
     end type Quantity
 
 contains
@@ -157,4 +157,11 @@ contains
         re = Q(this%get_value() / otherQuantity%get_value(), output_units)
         write(*,"(F8.3,A,F8.3,A,F8.3)") this%get_value(), " / ", otherQuantity%get_value(), " = ", re%get_value()
     end function divide
+
+    function is_known(this) result(known)
+        class(Quantity),intent(in)::this
+        logical::known
+
+        known = this%unit /= unknown
+    end function is_known
 end module class_Quantity

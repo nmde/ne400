@@ -53,9 +53,16 @@ contains
         label = this%mass_flows(index)%label
     end function m
 
-    subroutine print(this)
+    subroutine print(this, in_mode)
         class(Flow),intent(in)::this
-        integer::j
+        integer,intent(in),optional::in_mode
+        integer::j,mode
+
+        if (present(in_mode)) then
+            mode = in_mode
+        else
+            mode = 0
+        end if
 
         if (this%num_masses > 1) then
             write(13,"(A)",advance="no") "("
@@ -72,16 +79,33 @@ contains
         if (this%num_masses > 1) then
             write(13,"(A)",advance="no") ")"
         end if
-        write(13,"(A,I2,A)",advance="no") "h_{", this%point%index, ",a}"
+        write(13,"(A,I2)",advance="no") "h_{", this%point%index
+        if (mode == 1) then
+            write(13,"(A)",advance="no") ",s}"
+        else
+            write(13,"(A)",advance="no") ",a}"
+        end if
     end subroutine print
 
-    subroutine print_divided(this, by)
+    subroutine print_divided(this, by, in_mode)
         class(Flow),intent(in)::this
         integer,intent(in)::by
-        integer::j
+        integer,intent(in),optional::in_mode
+        integer::j,mode
+
+        if (present(in_mode)) then
+            mode = in_mode
+        else
+            mode = 0
+        end if
 
         if (this%num_masses == 1 .and. m(this,1) == by) then
-            write(13,"(A,I2,A)",advance="no") "h_{", this%point%index, ",a}"
+            write(13,"(A,I2)",advance="no") "h_{", this%point%index
+            if (mode == 1) then
+                write(13,"(A)",advance="no") ",s}"
+            else
+                write(13,"(A)",advance="no") ",a}"
+            end if
         else
             if (this%num_masses > 1) then
                 write(13,"(A)",advance="no") "("
@@ -103,7 +127,12 @@ contains
             if (this%num_masses > 1) then
                 write(13,"(A)",advance="no") ")"
             end if
-            write(13,"(A,I2,A)",advance="no") "h_{", this%point%index, ",a}"
+            write(13,"(A,I2)",advance="no") "h_{", this%point%index
+            if (mode == 1) then
+                write(13,"(A)",advance="no") ",s}"
+            else
+                write(13,"(A)",advance="no") ",a}"
+            end if
         end if
     end subroutine print_divided
 end module class_Flow

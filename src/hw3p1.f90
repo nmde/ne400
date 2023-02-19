@@ -56,8 +56,7 @@ contains
         call p%points(2)%given_P(1240.0, psia)
         call p%points(2)%calc_h_s()
         call p%points(2)%calc_s_s()
-        call p%points(2)%is_ideal()
-        call p%report_point(2)
+        call p%points(2)%set_ideal()
 
         call tex_label("HP Turbine:")
         hpt = create_Turbine(1, 2, "hpt", turbine_efficiency)
@@ -65,6 +64,9 @@ contains
         call hpt%add_output(create_Flow(1, (/m4/), p%points(4)))
         call hpt%add_output(create_Flow(3, (/m1,m3,m4/), p%points(5)))
         call hpt%print()
+        ! TODO - integrate this into the Turbine class somehow
+        call p%eq_s_s(4, 3)
+        call p%eq_s_s(5, 3)
 
         call tex_label("Reheater:")
         rh = create_HeatExchanger(2, 2)
@@ -133,5 +135,6 @@ contains
         call fp2%print()
 
         call tex_end_document()
+        call p%report_all_solved()
     end subroutine hw3_problem_1
 end module hw3p1

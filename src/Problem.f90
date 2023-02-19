@@ -11,8 +11,9 @@ module class_Problem
 
     type Problem
         type(Point),allocatable::points(:)
+        integer::num_points
     contains
-        procedure::report_point,eq_T,eq_P,eq_h_s,eq_s_s
+        procedure::report_point,eq_T,eq_P,eq_h_s,eq_s_s,report_all,report_all_solved
     end type Problem
 contains
     function create_problem(num_points, unit_system, output_file) result(this)
@@ -22,6 +23,8 @@ contains
         integer::io_err,i
 
         allocate(this%points(num_points))
+
+        this%num_points = num_points
 
         call initialize_steam_tables(unit_system)
 
@@ -70,7 +73,7 @@ contains
         this%points(point2)%enthalpy_s = Q(h1%get_value(), h1%get_unit())
 
         call tex_begin()
-        write(13,"(A,I2,A,I2,A)") "h_{", point2, "} = h_{", point1, "}"
+        write(13,"(A,I2,A,I2,A)") "h_{", point2, ",s} = h_{", point1, ",s}"
         call tex_end()
     end subroutine eq_h_s
 
@@ -83,7 +86,7 @@ contains
         this%points(point2)%entropy_s = Q(s1%get_value(), s1%get_unit())
 
         call tex_begin()
-        write(13,"(A,I2,A,I2,A)") "s_{", point2, "} = s_{", point1, "}"
+        write(13,"(A,I2,A,I2,A)") "s_{", point2, ",s} = s_{", point1, ",s}"
         call tex_end()
     end subroutine eq_s_s
 
@@ -101,10 +104,30 @@ contains
         x = this%points(index)%quality
 
         write(*,"(A,I3,A)") "Point ", index, ": =========================="
-        write(*,"(A,F8.3,A)" ) "    T = ", t%get_value(), " " // t%get_unit_str()
+        ! write(*,"(A,F8.3,A)" ) "    T = ", t%get_value(), " " // t%get_unit_str()
         write(*,"(A,F8.3,A)" ) "    P = ", p%get_value(), " " // p%get_unit_str()
-        write(*,"(A,F8.3,A,F8.3,A)" ) "    h ideal = ", h_s%get_value(), " actual = ", h_a%get_value(), " " // h_a%get_unit_str()
-        write(*,"(A,F8.3,A,F8.3,A)" ) "    s ideal = ", s_s%get_value(), " actual = ", s_a%get_value(), " " // s_a%get_unit_str()
+        write(*,"(A,F8.3,A,F8.3,A)" ) "    h ideal = ", h_s%get_value(), ", actual = ", h_a%get_value(), " " // h_a%get_unit_str()
+        write(*,"(A,F8.3,A,F8.3,A)" ) "    s ideal = ", s_s%get_value(), ", actual = ", s_a%get_value(), " " // s_a%get_unit_str()
         write(*,"(A,F8.3,A)" ) "    x = ", x%get_value(), " " // x%get_unit_str()
     end subroutine report_point
+
+    subroutine report_all(this)
+        class(Problem),intent(in)::this
+        integer::i
+
+        do i=1,this%num_points
+            call report_point(this, i)
+        end do
+    end subroutine report_all
+
+    subroutine report_all_solved(this)
+        class(Problem),intent(in)::this
+        integer::i
+
+        do i=1,this%num_points
+            if (this%points(i)%is_solved()) then
+                call report_point(this, i)
+            end if
+        end do
+    end subroutine report_all_solved
 end module class_Problem

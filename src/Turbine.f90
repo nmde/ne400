@@ -57,7 +57,13 @@ contains
         call tex_end()
 
         call tex_begin()
-        call print_ideal(this)
+        write(13,"(A)",advance="no") "\frac{\dot{W}_{" // this%label // ",a}}{m_1} = "
+        call print_equation(this, 0)
+        call tex_end()
+
+        call tex_begin()
+        write(13,"(A)",advance="no") "\frac{\dot{W}_{" // this%label // ",s}}{m_1} = "
+        call print_equation(this, 1)
         call tex_end()
 
         call tex_begin()
@@ -84,27 +90,29 @@ contains
         write(13,"(A)") " + \dot{W}_{" // this%label // ",a}"
     end subroutine print_1stlaw
 
-    subroutine print_ideal(this)
+    subroutine print_equation(this, mode)
         class(Turbine),intent(in)::this
+        integer,intent(in)::mode
         integer::i
 
-        write(13,"(A)",advance="no") "\frac{\dot{W}_{" // this%label // ",a}}{m_1} = "
         do i=1,this%num_inputs
             if (i > 1) then
                 write(13,"(A)",advance="no") " + "
             end if
-            call this%inputs(i)%print_divided(1)
+            call this%inputs(i)%print_divided(1, mode)
         end do
         do i=1,this%num_outputs
             write(13,"(A)",advance="no") " - "
-            call this%outputs(i)%print_divided(1)
+            call this%outputs(i)%print_divided(1, mode)
         end do
-    end subroutine print_ideal
+    end subroutine print_equation
 
     subroutine print_efficiency(this)
         class(Turbine),intent(in)::this
 
         write(13,"(A,F8.3,A)") "\eta_{" // this%label // "} = ", this%efficiency, &
-            " = \frac{\dot{W}_{" // this%label // ",a} / \dot{m}_{1}}{\dot{W}_{" // this%label // ",s} / \dot{m}_{1}}"
+            " = \frac{\dot{W}_{" // this%label // ",a} / \dot{m}_{1}}{\dot{W}_{" // this%label // ",s} / \dot{m}_{1}} = \frac{"
+        call print_equation(this, 0)
+        write(13,"(A)") "}{\dot{W}_{" // this%label // ",s} / \dot{m}_{1}}"
     end subroutine print_efficiency
 end module class_Turbine

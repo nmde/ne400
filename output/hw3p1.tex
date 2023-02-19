@@ -53,22 +53,6 @@ s_{ 2,a} = s_{ 2,s}
 \end{equation}
 
 
-Point 7
-\begin{equation}
-P_7 = 2 P_2
-\end{equation}
-
-\begin{equation}
-P_{ 7} = 2480.000\textnormal{ psia                      }
-\end{equation}
-
-
-Reheater
-\begin{equation}
-\dot{m}_{ 3}h_{ 2,a} + (\dot{m}_{ 1} - \dot{m}_{ 3} - \dot{m}_{ 4})h_{ 5,a} = \dot{m}_{ 3}h_{ 7,a} + (\dot{m}_{ 1} - \dot{m}_{ 3} - \dot{m}_{ 4})h_{ 6,a}
-\end{equation}
-
-
 HP Turbine:
 \begin{equation}
 (\dot{m}_{ 1} - \dot{m}_{ 3})h_{ 3,a} = \dot{m}_{ 4}h_{ 4,a} + (\dot{m}_{ 1} - \dot{m}_{ 3} - \dot{m}_{ 4})h_{ 5,a} + \dot{W}_{hpt,a}
@@ -78,7 +62,25 @@ HP Turbine:
 \frac{\dot{W}_{hpt,a}}{m_1} = (1 - \frac{\dot{m}_{ 3}}{\dot{m}_{ 1}})h_{ 3,a} - \frac{\dot{m}_{ 4}}{\dot{m}_{ 1}}h_{ 4,a} - (1 - \frac{\dot{m}_{ 3}}{\dot{m}_{ 1}} - \frac{\dot{m}_{ 4}}{\dot{m}_{ 1}})h_{ 5,a}\end{equation}
 
 \begin{equation}
-\eta_{hpt} =    0.950 = \frac{\dot{W}_{hpt,a} / \dot{m}_{1}}{\dot{W}_{hpt,s} / \dot{m}_{1}}
+\frac{\dot{W}_{hpt,s}}{m_1} = (1 - \frac{\dot{m}_{ 3}}{\dot{m}_{ 1}})h_{ 3,s} - \frac{\dot{m}_{ 4}}{\dot{m}_{ 1}}h_{ 4,s} - (1 - \frac{\dot{m}_{ 3}}{\dot{m}_{ 1}} - \frac{\dot{m}_{ 4}}{\dot{m}_{ 1}})h_{ 5,s}\end{equation}
+
+\begin{equation}
+\eta_{hpt} =    0.950 = \frac{\dot{W}_{hpt,a} / \dot{m}_{1}}{\dot{W}_{hpt,s} / \dot{m}_{1}} = \frac{
+(1 - \frac{\dot{m}_{ 3}}{\dot{m}_{ 1}})h_{ 3,a} - \frac{\dot{m}_{ 4}}{\dot{m}_{ 1}}h_{ 4,a} - (1 - \frac{\dot{m}_{ 3}}{\dot{m}_{ 1}} - \frac{\dot{m}_{ 4}}{\dot{m}_{ 1}})h_{ 5,a}}{\dot{W}_{hpt,s} / \dot{m}_{1}}
+\end{equation}
+
+\begin{equation}
+s_{ 4,s} = s_{ 3,s}
+\end{equation}
+
+\begin{equation}
+s_{ 5,s} = s_{ 3,s}
+\end{equation}
+
+
+Reheater:
+\begin{equation}
+\dot{m}_{ 3}h_{ 2,a} + (\dot{m}_{ 1} - \dot{m}_{ 3} - \dot{m}_{ 4})h_{ 5,a} = \dot{m}_{ 3}h_{ 7,a} + (\dot{m}_{ 1} - \dot{m}_{ 3} - \dot{m}_{ 4})h_{ 6,a}
 \end{equation}
 
 
@@ -91,7 +93,11 @@ LP Turbine:
 \frac{\dot{W}_{lpt,a}}{m_1} = (1 - \frac{\dot{m}_{ 3}}{\dot{m}_{ 1}} - \frac{\dot{m}_{ 4}}{\dot{m}_{ 1}})h_{ 6,a} - \frac{\dot{m}_{ 5}}{\dot{m}_{ 1}}h_{ 8,a} - \frac{\dot{m}_{ 6}}{\dot{m}_{ 1}}h_{ 9,a} - (1 - \frac{\dot{m}_{ 3}}{\dot{m}_{ 1}} - \frac{\dot{m}_{ 4}}{\dot{m}_{ 1}} - \frac{\dot{m}_{ 5}}{\dot{m}_{ 1}} - \frac{\dot{m}_{ 6}}{\dot{m}_{ 1}})h_{10,a}\end{equation}
 
 \begin{equation}
-\eta_{lpt} =    0.950 = \frac{\dot{W}_{lpt,a} / \dot{m}_{1}}{\dot{W}_{lpt,s} / \dot{m}_{1}}
+\frac{\dot{W}_{lpt,s}}{m_1} = (1 - \frac{\dot{m}_{ 3}}{\dot{m}_{ 1}} - \frac{\dot{m}_{ 4}}{\dot{m}_{ 1}})h_{ 6,s} - \frac{\dot{m}_{ 5}}{\dot{m}_{ 1}}h_{ 8,s} - \frac{\dot{m}_{ 6}}{\dot{m}_{ 1}}h_{ 9,s} - (1 - \frac{\dot{m}_{ 3}}{\dot{m}_{ 1}} - \frac{\dot{m}_{ 4}}{\dot{m}_{ 1}} - \frac{\dot{m}_{ 5}}{\dot{m}_{ 1}} - \frac{\dot{m}_{ 6}}{\dot{m}_{ 1}})h_{10,s}\end{equation}
+
+\begin{equation}
+\eta_{lpt} =    0.950 = \frac{\dot{W}_{lpt,a} / \dot{m}_{1}}{\dot{W}_{lpt,s} / \dot{m}_{1}} = \frac{
+(1 - \frac{\dot{m}_{ 3}}{\dot{m}_{ 1}} - \frac{\dot{m}_{ 4}}{\dot{m}_{ 1}})h_{ 6,a} - \frac{\dot{m}_{ 5}}{\dot{m}_{ 1}}h_{ 8,a} - \frac{\dot{m}_{ 6}}{\dot{m}_{ 1}}h_{ 9,a} - (1 - \frac{\dot{m}_{ 3}}{\dot{m}_{ 1}} - \frac{\dot{m}_{ 4}}{\dot{m}_{ 1}} - \frac{\dot{m}_{ 5}}{\dot{m}_{ 1}} - \frac{\dot{m}_{ 6}}{\dot{m}_{ 1}})h_{10,a}}{\dot{W}_{lpt,s} / \dot{m}_{1}}
 \end{equation}
 
 
