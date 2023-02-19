@@ -1,22 +1,31 @@
 module class_Flow
+    use class_Point
+
     implicit none
     private
 
-    public::Flow,create_Flow
+    public::Flow,create_Flow,MassFlow,create_MassFlow
 
     type Flow
-        integer,allocatable::mass_i(:)
-        integer::enthalpy_i,num_masses,mode
+        type(MassFlow),allocatable::mass_flows(:)
+        type(Point)::point
+        integer::num_masses,mode
     contains
         procedure::print,print_divided
     end type Flow
-contains
-    function create_Flow(mass_n, mass_i, enthalpy_i, mode) result(this)
-        type(Flow)::this
-        integer,intent(in)::mass_n,enthalpy_i,mass_i(mass_n)
-        integer,intent(in),optional::mode
 
-        allocate(this%mass_i(mass_n))
+    type MassFlow
+        integer::label
+    end type MassFlow
+contains
+    function create_Flow(mass_n, mf, p, mode) result(this)
+        type(Flow)::this
+        integer,intent(in)::mass_n
+        type(Point),intent(in)::p
+        integer,intent(in),optional::mode
+        type(MassFlow),intent(in)::mf(mass_n)
+
+        allocate(this%mass_flows(mass_n))
 
         if (present(mode)) then
             this%mode = mode
@@ -25,9 +34,24 @@ contains
         end if
 
         this%num_masses = mass_n
-        this%mass_i = mass_i
-        this%enthalpy_i = enthalpy_i
+        this%mass_flows = mf
+        this%point = p
     end function create_Flow
+
+    function create_MassFlow(label) result(this)
+        type(MassFlow)::this
+        integer,intent(in)::label
+
+        this%label = label
+    end function create_MassFlow
+
+    function m(this, index) result(label)
+        class(Flow),intent(in)::this
+        integer,intent(in)::index
+        integer::label
+
+        label = this%mass_flows(index)%label
+    end function m
 
     subroutine print(this)
         class(Flow),intent(in)::this
@@ -36,19 +60,19 @@ contains
         if (this%num_masses > 1) then
             write(13,"(A)",advance="no") "("
         end if
-        write(13,"(A,I2,A)",advance="no") "\dot{m}_{", this%mass_i(1), "}"
+        write(13,"(A,I2,A)",advance="no") "\dot{m}_{", m(this,1), "}"
         do j=2,this%num_masses
             if (this%mode == 0) then
                 write(13,"(A,I2,A)",advance="no") " - "
             else
                 write(13,"(A,I2,A)",advance="no") " + "
             end if
-            write(13,"(A,I2,A)",advance="no") "\dot{m}_{", this%mass_i(j), "}"
+            write(13,"(A,I2,A)",advance="no") "\dot{m}_{", m(this,j), "}"
         end do
         if (this%num_masses > 1) then
             write(13,"(A)",advance="no") ")"
         end if
-        write(13,"(A,I2,A)",advance="no") "h_{", this%enthalpy_i, ",a}"
+        write(13,"(A,I2,A)",advance="no") "h_{", this%point%index, ",a}"
     end subroutine print
 
     subroutine print_divided(this, by)
@@ -56,8 +80,8 @@ contains
         integer,intent(in)::by
         integer::j
 
-        if (this%num_masses == 1 .and. this%mass_i(1) == by) then
-            write(13,"(A,I2,A)",advance="no") "h_{", this%enthalpy_i, ",a}"
+        if (this%num_masses == 1 .and. m(this,1) == by) then
+            write(13,"(A,I2,A)",advance="no") "h_{", this%point%index, ",a}"
         else
             if (this%num_masses > 1) then
                 write(13,"(A)",advance="no") "("
@@ -70,16 +94,16 @@ contains
                         write(13,"(A,I2,A)",advance="no") " + "
                     end if
                 end if
-                if (this%mass_i(j) == by) then
+                if (m(this,j) == by) then
                     write(13,"(A)",advance="no") "1"
                 else
-                    write(13,"(A,I2,A,I2,A)",advance="no") "\frac{\dot{m}_{", this%mass_i(j), "}}{\dot{m}_{", by, "}}"
+                    write(13,"(A,I2,A,I2,A)",advance="no") "\frac{\dot{m}_{", m(this,j), "}}{\dot{m}_{", by, "}}"
                 end if
             end do
             if (this%num_masses > 1) then
                 write(13,"(A)",advance="no") ")"
             end if
-            write(13,"(A,I2,A)",advance="no") "h_{", this%enthalpy_i, ",a}"
+            write(13,"(A,I2,A)",advance="no") "h_{", this%point%index, ",a}"
         end if
     end subroutine print_divided
 end module class_Flow

@@ -4,7 +4,7 @@ module common
     implicit none
     private
 
-    public::tex_units,tex_begin,tex_end,tex_create_document,tex_end_document,tex_label,tex_simple_val
+    public::tex_units,tex_begin,tex_end,tex_create_document,tex_end_document,tex_label,tex_simple_val,tex_equation
 contains
     function tex_units(qu) result(str)
         type(Quantity),intent(in)::qu
@@ -62,4 +62,12 @@ contains
         write(13,"(A,F8.3)") varname // " = ", value
         call tex_end()
     end subroutine tex_simple_val
+
+    subroutine tex_equation(text)
+        character(*),intent(in)::text
+
+        call tex_begin()
+        write(13,"(A)") text
+        call tex_end()
+    end subroutine tex_equation
 end module common
