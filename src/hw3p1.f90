@@ -18,11 +18,11 @@ contains
         type(Problem)::p
         type(Turbine)::hpt,lpt
         type(Pump)::cp,cbp,fp1,fp2,rcp1,rcp2
-        type(HeatExchanger)::open_heater,he1,he2,rh
+        type(HeatExchanger)::open_heater,he1,he2,rh,sg1,sg2
         type(Efficiency)::cycle_efficiency
         type(MassFlow)::m1,m2,m3,m4,m5,m6,mp,mc
-        type(Quantity)::vf,Wcp,temp
-        real::turbine_efficiency,pump_efficiency,m4_m1
+        type(Quantity)::vf,Wcp,temp,Wcbp,m4_m1
+        real::turbine_efficiency,pump_efficiency
 
         p = create_problem(21, 1, "hw3p1.tex")
         call tex_create_document("NE 400 Homework 3", "Daniel Nevius", "February 20th, 2023")
@@ -44,7 +44,7 @@ contains
         mc = create_MassFlow(8)
 
         call tex_label("Cycle Efficiency:")
-        cycle_efficiency = create_Efficiency(8, 2, "\eta_{a}")
+        cycle_efficiency = create_Efficiency(8, 1, "\eta_{a}")
         call cycle_efficiency%add_input("htp")
         call cycle_efficiency%add_input("ltp")
         call cycle_efficiency%add_input("cp")
@@ -53,8 +53,7 @@ contains
         call cycle_efficiency%add_input("fp2")
         call cycle_efficiency%add_input("rcp1")
         call cycle_efficiency%add_input("rcp2")
-        call cycle_efficiency%add_output("SG1")
-        call cycle_efficiency%add_output("SG2")
+        call cycle_efficiency%add_output("Rx")
         call cycle_efficiency%print()
 
         call tex_simple_val("\eta_{t}", turbine_efficiency)
@@ -135,13 +134,6 @@ contains
         call p%point(10)%calc_h_s()
         call p%report_point(10)
 
-        ! Point 17
-        call p%eq_P(17, 4)
-        call p%point(17)%set_x_s(0.0)
-        call p%point(17)%calc_h_s()
-        call p%point(17)%calc_s_s()
-        call p%report_point(17)
-
         ! Point 11
         call p%eq_P(11, 10)
         call p%point(11)%calc_h_s()
@@ -181,11 +173,58 @@ contains
 
         call p%report_point(12)
 
+        call tex_label("CB Pump:")
+        cbp = create_Pump(1, 1, "cbp", pump_efficiency)
+        call cbp%add_input(create_Flow(1, (/m1/), p%point(13)))
+        call cbp%add_output(create_Flow(1, (/m1/), p%point(14)))
+        call cbp%print()
+
         ! Point 13
         call p%eq_P(13, 12)
+        call p%eq_s_s(13, 12)
+
+        ! Point 14
+        call p%eq_P(14, 8)
+
+        vf = sat_p_vf(p%point(13)%pressure)
+        Wcbp = vf%times(p%point(14)%pressure%minus(p%point(13)%pressure), btu_lbm)
+        call tex_begin()
+        write(13,"(A,F8.3,A,F8.3,A,F8.3,A,F8.3,A)") "-\frac{\dot{W}_{cbp,s}}{\dot{m}_{ 1}} = " &
+            // "h_{14,s} - h_{13,s} = v_{@P31}(P_{14} - P_{13}) = ", &
+            vf%get_value(), "(", p%point(14)%pressure%get_value(), " - ", p%point(13)%pressure%get_value(), &
+            ") = ", Wcbp%get_value(), tex_units(Wcbp)
+        call tex_end()
+
+        call p%point(13)%calc_x_s_from_s_s()
+        call p%point(13)%calc_h_s()
+        call p%report_point(13)
+
+        temp = Wcbp%plus(p%point(13)%enthalpy_s)
+        call p%point(14)%set_h_s(real(temp%get_value(), 4), btu_lbm)
+        call tex_begin()
+        write(13,"(A,F8.3,A,F8.3,A,F8.3,A,F8.3,A)") "h_{14,s} = -\frac{\dot{W}_{cbp,s}}{\dot{m}_{1}} + " &
+            // "h_{13,s} = ", Wcbp%get_value(), " + ", p%point(13)%enthalpy_s%get_value(), " = ", &
+            p%point(14)%enthalpy_s%get_value(), tex_units(p%point(14)%enthalpy_s)
+        call tex_end()
+
+        call p%point(14)%calc_x_s_from_h_s()
+        call p%point(14)%calc_s_s()
+        call p%report_point(14)
 
         ! Point 15
         call p%eq_P(15, 8)
+        call p%eq_s_s(15, 8)
+        call p%point(15)%calc_x_s_from_s_s()
+        call p%point(15)%calc_h_s()
+        call p%report_point(15)
+
+        ! Point 16
+        call p%point(16)%given_T(330.0, F)
+        call p%eq_P(16, 8)
+        write(13,"(A)") "Values for superheated steam directly from the steam charts:"
+        call p%point(16)%set_h_s(1197.7, btu_lbm)
+        call p%point(16)%set_s_s(1.6061, btu_lbmR)
+        call p%report_point(16)
 
         call tex_label("Heat Exchanger 2")
         he2 = create_HeatExchanger(2, 2)
@@ -197,6 +236,31 @@ contains
 
         call tex_begin()
         write(13,"(A)") "\frac{\dot{m}_{4}}{\dot{m}_{1}} = \frac{h_{1,s} - h_{16,s}}{h_{4,s} - h_{17,s}}"
+        call tex_end()
+
+        ! Point 17
+        call p%eq_P(17, 4)
+        call p%point(17)%set_x_s(0.0)
+        call p%point(17)%calc_h_s()
+        call p%point(17)%calc_s_s()
+        call p%report_point(17)
+
+        ! Point 1
+        call p%point(1)%given_T(480.0, F)
+        call p%point(1)%given_P(580.0, psia)
+        call tex_label("Using values for 500\(^{\circ}\) F from the superheated steam table:")
+        call p%point(1)%set_h_s(1219.1, btu_lbm)
+        call p%point(1)%set_s_s(1.4654, btu_lbmR)
+        call p%report_point(1)
+
+        ! TODO - somehow solve this within the HeatExchanger class
+        m4_m1 = p%point(1)%enthalpy_s%minus(p%point(16)%enthalpy_s)
+        m4_m1 = m4_m1%divide(p%point(4)%enthalpy_s%minus(p%point(17)%enthalpy_s), unitless)
+        call tex_begin()
+        write(13,"(A,F8.3,A,F8.3,A,F8.3,A,F8.3,A,F8.3)") "\frac{\dot{m}_{4}}{\dot{m}_{1}} = \frac{", &
+            p%point(1)%enthalpy_s%get_value(), " - ", p%point(16)%enthalpy_s%get_value(), "}{", &
+            p%point(4)%enthalpy_s%get_value(), " - ", p%point(17)%enthalpy_s%get_value(), "}} = ", &
+            m4_m1%get_value()
         call tex_end()
 
         call tex_label("Reheater:")
@@ -243,14 +307,7 @@ contains
             // "\frac{\dot{m}_{4}}{\dot{m}_{1}} + \frac{\dot{m}_{5}}{\dot{m}_{1}}) + h_{13,s}}{h_{9,s} - h_{12,s}}"
         call tex_end()
 
-        ! Point 1
-        call p%point(1)%given_T(480.0, F)
-        call p%point(1)%given_P(580.0, psia)
-
         ! Point 14
-
-        ! Point 16
-        call p%point(16)%given_T(330.0, F)
 
         ! Point 18
         call p%point(18)%given_T(645.0, F)
@@ -273,12 +330,6 @@ contains
         call lpt%add_output(create_Flow(5, (/m1,m3,m4,m5,m6/), p%point(10)))
         call lpt%print()
 
-        call tex_label("CB Pump:")
-        cbp = create_Pump(1, 1, "cbp", pump_efficiency)
-        call cbp%add_input(create_Flow(1, (/m1/), p%point(13)))
-        call cbp%add_output(create_Flow(1, (/m1/), p%point(14)))
-        call cbp%print()
-
         call tex_label("FP 1")
         fp1 = create_Pump(1, 1, "fp1", pump_efficiency)
         call fp1%add_input(create_Flow(1, (/m2/), p%point(1)))
@@ -293,15 +344,31 @@ contains
 
         call tex_label("RCP 1")
         rcp1 = create_Pump(1, 1, "rcp1", pump_efficiency)
-        call rcp1%add_input(create_Flow(1, (/mp/), p%point(20)))
-        call rcp1%add_output(create_Flow(1, (/mp/), p%point(19)))
+        call rcp1%add_input(create_Flow(1, (/mp/), p%point(19)))
+        call rcp1%add_output(create_Flow(1, (/mp/), p%point(20)))
         call rcp1%print()
 
         call tex_label("RCP 2")
         rcp2 = create_Pump(1, 1, "rcp2", pump_efficiency)
-        call rcp2%add_input(create_Flow(1, (/mp/), p%point(20)))
-        call rcp2%add_output(create_Flow(1, (/mp/), p%point(19)))
+        call rcp2%add_input(create_Flow(1, (/mp/), p%point(19)))
+        call rcp2%add_output(create_Flow(1, (/mp/), p%point(20)))
         call rcp2%print()
+
+        call tex_label("SG1")
+        sg1 = create_HeatExchanger(2, 2)
+        call sg1%add_input(create_Flow(1, (/mp/), p%point(18)))
+        call sg1%add_input(create_Flow(1, (/m2/), p%point(21)))
+        call sg1%add_output(create_Flow(1, (/mp/), p%point(19)))
+        call sg1%add_output(create_Flow(1, (/m2/), p%point(2)))
+        call sg1%print()
+
+        call tex_label("SG2")
+        sg2 = create_HeatExchanger(2, 2)
+        call sg2%add_input(create_Flow(1, (/mp/), p%point(18)))
+        call sg2%add_input(create_Flow(1, (/m2/), p%point(21)))
+        call sg2%add_output(create_Flow(1, (/mp/), p%point(19)))
+        call sg2%add_output(create_Flow(1, (/m2/), p%point(2)))
+        call sg2%print()
 
         call tex_end_document()
         call p%report_all_solved()
