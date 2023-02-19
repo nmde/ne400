@@ -123,8 +123,8 @@ contains
         this%quality_s = this%enthalpy_s%minus(hf)
         this%quality_s = this%quality_s%divide(hfg, unitless)
 
-        if (this%quality_s%get_value() > 1) then
-            write(*,"(A,I2)") "**** WARNING: Quality > 1 at point ", this%index
+        if (this%quality_s%get_value() > 1 .or. this%quality_s%get_value() < 0) then
+            write(*,"(A,I2)") "**** WARNING: Unexpected quality at point ", this%index
         end if
 
         call tex_begin()
@@ -144,8 +144,8 @@ contains
         this%quality_s = this%entropy_s%minus(sf)
         this%quality_s = this%entropy_s%divide(sfg, unitless)
 
-        if (this%quality_s%get_value() > 1) then
-            write(*,"(A,I2)") "**** WARNING: Quality > 1 at point ", this%index
+        if (this%quality_s%get_value() > 1 .or. this%quality_s%get_value() < 0) then
+            write(*,"(A,I2)") "**** WARNING: Unexpected quality at point ", this%index
         end if
 
         call tex_begin()

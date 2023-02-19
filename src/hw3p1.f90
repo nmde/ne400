@@ -6,6 +6,7 @@ module hw3p1
     use class_Turbine
     use class_Pump
     use class_HeatExchanger
+    use SteamTable
     use common
 
     implicit none
@@ -20,6 +21,7 @@ contains
         type(HeatExchanger)::open_heater,he1,he2,rh
         type(Efficiency)::cycle_efficiency
         type(MassFlow)::m1,m2,m3,m4,m5,m6,mp,mc
+        type(Quantity)::vf,Wcp,temp
         real::turbine_efficiency,pump_efficiency,m4_m1
 
         p = create_problem(21, 1, "hw3p1.tex")
@@ -71,6 +73,7 @@ contains
         call p%point(2)%calc_h_s()
         call p%point(2)%calc_s_s()
         call p%point(2)%set_ideal()
+        call p%report_point(2)
 
         ! Point 3
         call p%point(3)%given_P(940.0, psia)
@@ -78,26 +81,30 @@ contains
         call p%point(3)%calc_x_s_from_h_s()
         call p%point(3)%calc_s_s()
         call p%point(3)%set_ideal()
+        call p%report_point(3)
 
         ! Point 4
         call p%point(4)%given_P(385.0, psia)
         call p%eq_s_s(4, 3)
         call p%point(4)%calc_x_s_from_s_s()
         call p%point(4)%calc_h_s()
+        call p%report_point(4)
 
         ! Point 5
         call p%point(5)%given_P(160.0, psia)
         call p%eq_s_s(5, 3)
         call p%point(5)%calc_x_s_from_s_s()
         call p%point(5)%calc_h_s()
+        call p%report_point(5)
 
         ! Point 6
         call p%point(6)%given_T(560.0, F)
         call p%eq_P(6, 5)
 
-        write(13,"(A)") "Interpolating using equation (\ref{interpolation}):"
+        write(13,"(A)") "Interpolating from superheated steam tables using equation (\ref{interpolation}):"
         call p%point(6)%set_h_s(1304.76, btu_lbm)
         call p%point(6)%set_s_s(1.6840, btu_lbmR)
+        call p%report_point(6)
 
         ! Point 7
         call p%eq_P(7,2)
@@ -105,36 +112,80 @@ contains
         call p%point(7)%set_x_s(0.0)
         call p%point(7)%calc_h_s()
         call p%point(7)%calc_s_s()
+        call p%report_point(7)
 
         ! Point 8
         call p%point(8)%given_P(110.0, psia)
         call p%eq_s_s(8, 6)
         call p%point(8)%calc_x_s_from_s_s()
         call p%point(8)%calc_h_s()
+        call p%report_point(8)
 
         ! Point 9
         call p%point(9)%given_P(25.0, psia)
         call p%eq_s_s(9, 6)
         call p%point(9)%calc_x_s_from_s_s()
         call p%point(9)%calc_h_s()
+        call p%report_point(9)
 
         ! Point 10
         call p%point(10)%given_P(2.0, psia)
         call p%eq_s_s(10, 6)
         call p%point(10)%calc_x_s_from_s_s()
         call p%point(10)%calc_h_s()
+        call p%report_point(10)
 
         ! Point 17
         call p%eq_P(17, 4)
         call p%point(17)%set_x_s(0.0)
         call p%point(17)%calc_h_s()
         call p%point(17)%calc_s_s()
+        call p%report_point(17)
+
+        ! Point 11
+        call p%eq_P(11, 10)
+        call p%point(11)%calc_h_s()
+        call p%point(11)%calc_s_s()
+        call p%report_point(11)
+
+        ! Point 12
+        call p%eq_P(12, 9)
+
+        call tex_label("Condensate Pump:")
+        cp = create_Pump(1, 1, "cp", pump_efficiency)
+        call cp%add_input(create_Flow(5, (/m1,m3,m4,m5,m6/), p%point(11)))
+        call cp%add_output(create_Flow(5, (/m1,m3,m4,m5,m6/), p%point(12)))
+        call cp%print()
+
+        vf = sat_p_vf(p%point(11)%pressure)
+        Wcp = vf%times(p%point(12)%pressure%minus(p%point(11)%pressure), btu_lbm)
+        call tex_begin()
+        write(13,"(A,F8.3,A,F8.3,A,F8.3,A,F8.3,A)") "-\frac{\dot{W}_{cp,s}}{1 - \frac{\dot{m}_{ 3}}{\dot{m}_{ 1}} - " &
+            // "\frac{\dot{m}_{ 4}}{\dot{m}_{ 1}} - \frac{\dot{m}_{ 5}}{\dot{m}_{ 1}} - \frac{\dot{m}_{ 6}}{\dot{m}_{ 1}}} = " &
+            // "h_{12,s} - h_{11,s} = v_{@P11}(P_{12} - P_{11}) = ", &
+            vf%get_value(), "(", p%point(12)%pressure%get_value(), " - ", p%point(11)%pressure%get_value(), &
+            ") = ", Wcp%get_value(), tex_units(Wcp)
+        call tex_end()
+
+        temp = Wcp%plus(p%point(11)%enthalpy_s)
+        call p%point(12)%set_h_s(real(temp%get_value(), 4), btu_lbm)
+        call tex_begin()
+        write(13,"(A,F8.3,A,F8.3,A,F8.3,A,F8.3,A)") "h_{12,s} = -\frac{\dot{W}_{cp,s}}{1 - \frac{\dot{m}_{ 3}}{\dot{m}_{ 1}} - " &
+            // "\frac{\dot{m}_{ 4}}{\dot{m}_{ 1}} - \frac{\dot{m}_{ 5}}{\dot{m}_{ 1}} - \frac{\dot{m}_{ 6}}{\dot{m}_{ 1}}} + " &
+            // "h_{11,s} = ", Wcp%get_value(), " + ", p%point(11)%enthalpy_s%get_value(), " = ", &
+            p%point(12)%enthalpy_s%get_value(), tex_units(p%point(11)%enthalpy_s)
+        call tex_end()
+
+        call p%point(12)%calc_x_s_from_h_s()
+        call p%point(12)%calc_s_s()
+
+        call p%report_point(12)
+
+        ! Point 13
+        call p%eq_P(13, 12)
 
         ! Point 15
         call p%eq_P(15, 8)
-
-        ! Point 12
-        call p%ep_P(12, 9)
 
         call tex_label("Heat Exchanger 2")
         he2 = create_HeatExchanger(2, 2)
@@ -196,15 +247,6 @@ contains
         call p%point(1)%given_T(480.0, F)
         call p%point(1)%given_P(580.0, psia)
 
-        
-
-        ! Point 11
-        call p%eq_P(11, 10)
-        call p%point(11)%calc_h_s()
-        call p%point(11)%calc_s_s()
-
-        ! Point 13
-
         ! Point 14
 
         ! Point 16
@@ -230,12 +272,6 @@ contains
         call lpt%add_output(create_Flow(1, (/m6/), p%point(9)))
         call lpt%add_output(create_Flow(5, (/m1,m3,m4,m5,m6/), p%point(10)))
         call lpt%print()
-
-        call tex_label("Condensate Pump:")
-        cp = create_Pump(1, 1, "cp", pump_efficiency)
-        call cp%add_input(create_Flow(5, (/m1,m3,m4,m5,m6/), p%point(11)))
-        call cp%add_output(create_Flow(5, (/m1,m3,m4,m5,m6/), p%point(12)))
-        call cp%print()
 
         call tex_label("CB Pump:")
         cbp = create_Pump(1, 1, "cbp", pump_efficiency)

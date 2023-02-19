@@ -146,7 +146,7 @@ T_{ 6} =  560.000\textnormal{ \(^{\circ}\)F             }
 P_{ 6} = P_{ 5}
 \end{equation}
 
-Interpolating using equation (\ref{interpolation}):
+Interpolating from superheated steam tables using equation (\ref{interpolation}):
 \begin{equation}
   h_{ 6,s} = 1304.760\textnormal{ BTU/lbm                   }
 \end{equation}
@@ -242,6 +242,66 @@ P_{17} = P_{ 4}
 \textnormal{ BTU/lbm}\cdot\textnormal{R}
 \end{equation}
 
+\begin{equation}
+P_{11} = P_{10}
+\end{equation}
+
+\begin{equation}
+  h_{11,s} = (h_{f} + x_{11}h_{fg})_{@P11} =   80.340 + 0.00\cdot1027.300 =   80.340
+\textnormal{ BTU/lbm                   }
+\end{equation}
+
+\begin{equation}
+  s_{11,s} = (s_{f} + x_{11}s_{fg})_{@P11} =    0.158 + 0.00\cdot   1.786 =    0.158
+\textnormal{ BTU/lbm}\cdot\textnormal{R}
+\end{equation}
+
+\begin{equation}
+P_{12} = P_{ 9}
+\end{equation}
+
+
+Condensate Pump:
+\begin{equation}
+(\dot{m}_{ 1} - \dot{m}_{ 3} - \dot{m}_{ 4} - \dot{m}_{ 5} - \dot{m}_{ 6})h_{11,a} = (\dot{m}_{ 1} - \dot{m}_{ 3} - \dot{m}_{ 4} - \dot{m}_{ 5} - \dot{m}_{ 6})h_{12,a} + \dot{W}_{cp ,a}
+\end{equation}
+
+\begin{equation}
+-\frac{\dot{W}_{cp ,a}}{m_1} = (1 - \frac{\dot{m}_{ 3}}{\dot{m}_{ 1}} - \frac{\dot{m}_{ 4}}{\dot{m}_{ 1}} - \frac{\dot{m}_{ 5}}{\dot{m}_{ 1}} - \frac{\dot{m}_{ 6}}{\dot{m}_{ 1}})h_{12,a} - (1 - \frac{\dot{m}_{ 3}}{\dot{m}_{ 1}} - \frac{\dot{m}_{ 4}}{\dot{m}_{ 1}} - \frac{\dot{m}_{ 5}}{\dot{m}_{ 1}} - \frac{\dot{m}_{ 6}}{\dot{m}_{ 1}})h_{11,a}\end{equation}
+
+\begin{equation}
+-\frac{\dot{W}_{cp ,s}}{m_1} = (1 - \frac{\dot{m}_{ 3}}{\dot{m}_{ 1}} - \frac{\dot{m}_{ 4}}{\dot{m}_{ 1}} - \frac{\dot{m}_{ 5}}{\dot{m}_{ 1}} - \frac{\dot{m}_{ 6}}{\dot{m}_{ 1}})h_{12,s} - (1 - \frac{\dot{m}_{ 3}}{\dot{m}_{ 1}} - \frac{\dot{m}_{ 4}}{\dot{m}_{ 1}} - \frac{\dot{m}_{ 5}}{\dot{m}_{ 1}} - \frac{\dot{m}_{ 6}}{\dot{m}_{ 1}})h_{11,s}\end{equation}
+
+\begin{equation}
+\eta_{cp } =    0.800 = \frac{\dot{W}_{cp ,a} / \dot{m}_{1}}{\dot{W}_{cp ,s} / \dot{m}_{1}} = \frac{
+(1 - \frac{\dot{m}_{ 3}}{\dot{m}_{ 1}} - \frac{\dot{m}_{ 4}}{\dot{m}_{ 1}} - \frac{\dot{m}_{ 5}}{\dot{m}_{ 1}} - \frac{\dot{m}_{ 6}}{\dot{m}_{ 1}})h_{12,a} - (1 - \frac{\dot{m}_{ 3}}{\dot{m}_{ 1}} - \frac{\dot{m}_{ 4}}{\dot{m}_{ 1}} - \frac{\dot{m}_{ 5}}{\dot{m}_{ 1}} - \frac{\dot{m}_{ 6}}{\dot{m}_{ 1}})h_{11,a}}{\dot{W}_{cp ,s} / \dot{m}_{1}}
+\end{equation}
+
+\begin{equation}
+-\frac{\dot{W}_{cp,s}}{1 - \frac{\dot{m}_{ 3}}{\dot{m}_{ 1}} - \frac{\dot{m}_{ 4}}{\dot{m}_{ 1}} - \frac{\dot{m}_{ 5}}{\dot{m}_{ 1}} - \frac{\dot{m}_{ 6}}{\dot{m}_{ 1}}} = h_{12,s} - h_{11,s} = v_{@P11}(P_{12} - P_{11}) =    0.016(  25.000 -    2.000) =    0.373\textnormal{ BTU/lbm                   }
+\end{equation}
+
+\begin{equation}
+  h_{12,s} =   80.713\textnormal{ BTU/lbm                   }
+\end{equation}
+
+\begin{equation}
+h_{12,s} = -\frac{\dot{W}_{cp,s}}{1 - \frac{\dot{m}_{ 3}}{\dot{m}_{ 1}} - \frac{\dot{m}_{ 4}}{\dot{m}_{ 1}} - \frac{\dot{m}_{ 5}}{\dot{m}_{ 1}} - \frac{\dot{m}_{ 6}}{\dot{m}_{ 1}}} + h_{11,s} =    0.373 +   80.340 =   80.713\textnormal{ BTU/lbm                   }
+\end{equation}
+
+\begin{equation}
+x_{12.s} = (\frac{h_{12,s} - h_{f}}{h_fg})_{@P12} = \frac{  80.713 -  207.585}{ 952.650} =   -0.133
+\end{equation}
+
+\begin{equation}
+  s_{12,s} = (s_{f} + x_{12}s_{fg})_{@P12} =    0.352 + -.13\cdot   1.364 =    0.170
+\textnormal{ BTU/lbm}\cdot\textnormal{R}
+\end{equation}
+
+\begin{equation}
+P_{15} = P_{ 8}
+\end{equation}
+
 
 Heat Exchanger 2
 \begin{equation}
@@ -307,20 +367,6 @@ P_{ 1} =  580.000\textnormal{ psia                      }
 \end{equation}
 
 \begin{equation}
-P_{11} = P_{10}
-\end{equation}
-
-\begin{equation}
-  h_{11,s} = (h_{f} + x_{11}h_{fg})_{@P11} =   80.340 + 0.00\cdot1027.300 =   80.340
-\textnormal{ BTU/lbm                   }
-\end{equation}
-
-\begin{equation}
-  s_{11,s} = (s_{f} + x_{11}s_{fg})_{@P11} =    0.158 + 0.00\cdot   1.786 =    0.158
-\textnormal{ BTU/lbm}\cdot\textnormal{R}
-\end{equation}
-
-\begin{equation}
 T_{16} =  330.000\textnormal{ \(^{\circ}\)F             }
 \end{equation}
 
@@ -359,23 +405,6 @@ LP Turbine:
 \begin{equation}
 \eta_{lpt} =    0.950 = \frac{\dot{W}_{lpt,a} / \dot{m}_{1}}{\dot{W}_{lpt,s} / \dot{m}_{1}} = \frac{
 (1 - \frac{\dot{m}_{ 3}}{\dot{m}_{ 1}} - \frac{\dot{m}_{ 4}}{\dot{m}_{ 1}})h_{ 6,a} - \frac{\dot{m}_{ 5}}{\dot{m}_{ 1}}h_{ 8,a} - \frac{\dot{m}_{ 6}}{\dot{m}_{ 1}}h_{ 9,a} - (1 - \frac{\dot{m}_{ 3}}{\dot{m}_{ 1}} - \frac{\dot{m}_{ 4}}{\dot{m}_{ 1}} - \frac{\dot{m}_{ 5}}{\dot{m}_{ 1}} - \frac{\dot{m}_{ 6}}{\dot{m}_{ 1}})h_{10,a}}{\dot{W}_{lpt,s} / \dot{m}_{1}}
-\end{equation}
-
-
-Condensate Pump:
-\begin{equation}
-(\dot{m}_{ 1} - \dot{m}_{ 3} - \dot{m}_{ 4} - \dot{m}_{ 5} - \dot{m}_{ 6})h_{11,a} = (\dot{m}_{ 1} - \dot{m}_{ 3} - \dot{m}_{ 4} - \dot{m}_{ 5} - \dot{m}_{ 6})h_{12,a} + \dot{W}_{cp ,a}
-\end{equation}
-
-\begin{equation}
--\frac{\dot{W}_{cp ,a}}{m_1} = (1 - \frac{\dot{m}_{ 3}}{\dot{m}_{ 1}} - \frac{\dot{m}_{ 4}}{\dot{m}_{ 1}} - \frac{\dot{m}_{ 5}}{\dot{m}_{ 1}} - \frac{\dot{m}_{ 6}}{\dot{m}_{ 1}})h_{12,a} - (1 - \frac{\dot{m}_{ 3}}{\dot{m}_{ 1}} - \frac{\dot{m}_{ 4}}{\dot{m}_{ 1}} - \frac{\dot{m}_{ 5}}{\dot{m}_{ 1}} - \frac{\dot{m}_{ 6}}{\dot{m}_{ 1}})h_{11,a}\end{equation}
-
-\begin{equation}
--\frac{\dot{W}_{cp ,s}}{m_1} = (1 - \frac{\dot{m}_{ 3}}{\dot{m}_{ 1}} - \frac{\dot{m}_{ 4}}{\dot{m}_{ 1}} - \frac{\dot{m}_{ 5}}{\dot{m}_{ 1}} - \frac{\dot{m}_{ 6}}{\dot{m}_{ 1}})h_{12,s} - (1 - \frac{\dot{m}_{ 3}}{\dot{m}_{ 1}} - \frac{\dot{m}_{ 4}}{\dot{m}_{ 1}} - \frac{\dot{m}_{ 5}}{\dot{m}_{ 1}} - \frac{\dot{m}_{ 6}}{\dot{m}_{ 1}})h_{11,s}\end{equation}
-
-\begin{equation}
-\eta_{cp } =    0.800 = \frac{\dot{W}_{cp ,a} / \dot{m}_{1}}{\dot{W}_{cp ,s} / \dot{m}_{1}} = \frac{
-(1 - \frac{\dot{m}_{ 3}}{\dot{m}_{ 1}} - \frac{\dot{m}_{ 4}}{\dot{m}_{ 1}} - \frac{\dot{m}_{ 5}}{\dot{m}_{ 1}} - \frac{\dot{m}_{ 6}}{\dot{m}_{ 1}})h_{12,a} - (1 - \frac{\dot{m}_{ 3}}{\dot{m}_{ 1}} - \frac{\dot{m}_{ 4}}{\dot{m}_{ 1}} - \frac{\dot{m}_{ 5}}{\dot{m}_{ 1}} - \frac{\dot{m}_{ 6}}{\dot{m}_{ 1}})h_{11,a}}{\dot{W}_{cp ,s} / \dot{m}_{1}}
 \end{equation}
 
 

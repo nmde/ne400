@@ -66,6 +66,11 @@ contains
         call print_equation(this, 1)
         call tex_end()
 
+        !call tex_begin()
+        !write(13,"(A,I2,A,I2,A,I2,A)",advance="no") "-\frac{\dot{W}_{" // this%label // ",s}}{m_1} = v_{@P", &
+        !    this%inputs(1)%point%index, "}(P_{", this%outputs(1)%point%index, "} - P_{", this%inputs(1)%point%index, "})"
+        !call tex_end()
+
         call tex_begin()
         call print_efficiency(this)
         call tex_end()
