@@ -61,7 +61,7 @@ contains
         call print_equation(this, 0)
         call tex_end()
 
-        call tex_begin()
+        call tex_begin(this%label // "_s")
         write(13,"(A)",advance="no") "\frac{\dot{W}_{" // this%label // ",s}}{m_1} = "
         call print_equation(this, 1)
         call tex_end()

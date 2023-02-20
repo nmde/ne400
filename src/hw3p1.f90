@@ -21,7 +21,7 @@ contains
         type(HeatExchanger)::open_heater,he1,he2,rh,sg1,sg2
         type(Efficiency)::cycle_efficiency
         type(MassFlow)::m1,m2,m3,m4,m5,m6,mp,mc
-        type(Quantity)::vf,Wcp,temp,Wcbp,m4_m1,m3_m1,m5_m1
+        type(Quantity)::vf,Wcps,temp,Wcbps,m4_m1,m3_m1,m5_m1,m6_m1,Whpts
         real::turbine_efficiency,pump_efficiency
 
         p = create_problem(21, 1, "hw3p1.tex")
@@ -150,21 +150,22 @@ contains
         call cp%print()
 
         vf = sat_p_vf(p%point(11)%pressure)
-        Wcp = vf%times(p%point(12)%pressure%minus(p%point(11)%pressure), btu_lbm)
+        Wcps = vf%times(p%point(12)%pressure%minus(p%point(11)%pressure), btu_lbm)
         call tex_begin()
         write(13,"(A,F8.3,A,F8.3,A,F8.3,A,F8.3,A)") "-\frac{\dot{W}_{cp,s}}{1 - \frac{\dot{m}_{ 3}}{\dot{m}_{ 1}} - " &
             // "\frac{\dot{m}_{ 4}}{\dot{m}_{ 1}} - \frac{\dot{m}_{ 5}}{\dot{m}_{ 1}} - \frac{\dot{m}_{ 6}}{\dot{m}_{ 1}}} = " &
             // "h_{12,s} - h_{11,s} = v_{@P11}(P_{12} - P_{11}) = ", &
             vf%get_value(), "(", p%point(12)%pressure%get_value(), " - ", p%point(11)%pressure%get_value(), &
-            ") = ", Wcp%get_value(), tex_units(Wcp)
+            ") = ", Wcps%get_value(), tex_units(Wcps)
         call tex_end()
+        write(*,"(A,F8.3)") "Wcp = ", Wcps%get_value()
 
-        temp = Wcp%plus(p%point(11)%enthalpy_s)
+        temp = Wcps%plus(p%point(11)%enthalpy_s)
         call p%point(12)%set_h_s(real(temp%get_value(), 4), btu_lbm)
         call tex_begin()
         write(13,"(A,F8.3,A,F8.3,A,F8.3,A,F8.3,A)") "h_{12,s} = -\frac{\dot{W}_{cp,s}}{1 - \frac{\dot{m}_{ 3}}{\dot{m}_{ 1}} - " &
             // "\frac{\dot{m}_{ 4}}{\dot{m}_{ 1}} - \frac{\dot{m}_{ 5}}{\dot{m}_{ 1}} - \frac{\dot{m}_{ 6}}{\dot{m}_{ 1}}} + " &
-            // "h_{11,s} = ", Wcp%get_value(), " + ", p%point(11)%enthalpy_s%get_value(), " = ", &
+            // "h_{11,s} = ", Wcps%get_value(), " + ", p%point(11)%enthalpy_s%get_value(), " = ", &
             p%point(12)%enthalpy_s%get_value(), tex_units(p%point(11)%enthalpy_s)
         call tex_end()
 
@@ -181,29 +182,29 @@ contains
 
         ! Point 13
         call p%eq_P(13, 12)
-        call p%eq_s_s(13, 12)
+        write(13,"(A)") "Sat. liquid at P13:"
+        call p%point(13)%set_h_s(208.52, btu_lbm)
+        call p%point(13)%set_s_s(0.35347, btu_lbmR)
+        call p%report_point(13)
 
         ! Point 14
         call p%eq_P(14, 8)
 
         vf = sat_p_vf(p%point(13)%pressure)
-        Wcbp = vf%times(p%point(14)%pressure%minus(p%point(13)%pressure), btu_lbm)
+        Wcbps = vf%times(p%point(14)%pressure%minus(p%point(13)%pressure), btu_lbm)
         call tex_begin()
         write(13,"(A,F8.3,A,F8.3,A,F8.3,A,F8.3,A)") "-\frac{\dot{W}_{cbp,s}}{\dot{m}_{ 1}} = " &
             // "h_{14,s} - h_{13,s} = v_{@P31}(P_{14} - P_{13}) = ", &
             vf%get_value(), "(", p%point(14)%pressure%get_value(), " - ", p%point(13)%pressure%get_value(), &
-            ") = ", Wcbp%get_value(), tex_units(Wcbp)
+            ") = ", Wcbps%get_value(), tex_units(Wcbps)
         call tex_end()
+        write(*,"(A,F8.3)") "Wcbp = ", Wcbps%get_value()
 
-        call p%point(13)%calc_x_s_from_s_s()
-        call p%point(13)%calc_h_s()
-        call p%report_point(13)
-
-        temp = Wcbp%plus(p%point(13)%enthalpy_s)
+        temp = Wcbps%plus(p%point(13)%enthalpy_s)
         call p%point(14)%set_h_s(real(temp%get_value(), 4), btu_lbm)
         call tex_begin()
         write(13,"(A,F8.3,A,F8.3,A,F8.3,A,F8.3,A)") "h_{14,s} = -\frac{\dot{W}_{cbp,s}}{\dot{m}_{1}} + " &
-            // "h_{13,s} = ", Wcbp%get_value(), " + ", p%point(13)%enthalpy_s%get_value(), " = ", &
+            // "h_{13,s} = ", Wcbps%get_value(), " + ", p%point(13)%enthalpy_s%get_value(), " = ", &
             p%point(14)%enthalpy_s%get_value(), tex_units(p%point(14)%enthalpy_s)
         call tex_end()
 
@@ -213,9 +214,9 @@ contains
 
         ! Point 15
         call p%eq_P(15, 8)
-        call p%eq_s_s(15, 8)
-        call p%point(15)%calc_x_s_from_s_s()
-        call p%point(15)%calc_h_s()
+        write(13,"(A)") "Sat. liquid at P15:"
+        call p%point(15)%set_h_s(305.78, btu_lbm)
+        call p%point(15)%set_s_s(0.48341, btu_lbmR)
         call p%report_point(15)
 
         ! Point 16
@@ -259,9 +260,10 @@ contains
         call tex_begin()
         write(13,"(A,F8.3,A,F8.3,A,F8.3,A,F8.3,A,F8.3)") "\frac{\dot{m}_{4}}{\dot{m}_{1}} = \frac{", &
             p%point(1)%enthalpy_s%get_value(), " - ", p%point(16)%enthalpy_s%get_value(), "}{", &
-            p%point(4)%enthalpy_s%get_value(), " - ", p%point(17)%enthalpy_s%get_value(), "}} = ", &
+            p%point(4)%enthalpy_s%get_value(), " - ", p%point(17)%enthalpy_s%get_value(), "} = ", &
             m4_m1%get_value()
         call tex_end()
+        write(*,"(A,F8.3)") "m4/m1 = ", m4_m1%get_value()
 
         call tex_label("Reheater:")
         rh = create_HeatExchanger(2, 2)
@@ -286,6 +288,17 @@ contains
             ")}{", p%point(6)%enthalpy_s%get_value(), " + ", p%point(2)%enthalpy_s%get_value(), " - ", &
             p%point(5)%enthalpy_s%get_value(), " - ", p%point(7)%enthalpy_s%get_value(), "} = ", m3_m1%get_value()
         call tex_end()
+        write(*,"(A,F8.3)") "m3/m1 = ", m3_m1%get_value()
+
+        temp = Q(1D0, unitless)
+        Whpts = p%point(3)%enthalpy_s%times(temp%minus(m3_m1), btu_lbm)
+        Whpts = Whpts%minus(m4_m1%times(p%point(4)%enthalpy_s, btu_lbm))
+        Whpts = Whpts%minus(p%point(5)%enthalpy_s%times(temp%minus(m3_m1%minus(m4_m1)), btu_lbm))
+        call tex_label("Plugging into equation (\ref{hpt_s}):")
+        call tex_begin()
+        write(13,"(A,F8.3)") "\frac{\dot{W}_{hpt,s}}{m_1} = ", Whpts%get_value()
+        call tex_end()
+        write(*,"(A,F8.3,A)") "Whpts = ", Whpts%get_value(), tex_units(Whpts)
 
         call tex_label("Heat Exchanger 1")
         he1 = create_HeatExchanger(4, 2)
@@ -313,6 +326,7 @@ contains
         call tex_begin()
         write(13,"(A,F8.3)") "\frac{\dot{m}_{5}}{\dot{m}_{1}} = ", m5_m1%get_value()
         call tex_end()
+        write(*,"(A,F8.3)") "m5/m1 = ", m5_m1%get_value()
 
         call tex_label("Open Heater:")
         open_heater = create_HeatExchanger(3, 1)
@@ -329,7 +343,23 @@ contains
             // "\frac{\dot{m}_{4}}{\dot{m}_{1}} + \frac{\dot{m}_{5}}{\dot{m}_{1}}) + h_{13,s}}{h_{9,s} - h_{12,s}}"
         call tex_end()
 
-        ! Point 14
+        m6_m1 = p%point(12)%enthalpy_s%times(m3_m1%plus(m4_m1%plus(m5_m1%minus(Q(1D0,unitless)))), btu_lbm)
+        m6_m1 = m6_m1%minus(p%point(15)%enthalpy_s%times(m3_m1%plus(m4_m1%plus(m5_m1)), btu_lbm))
+        m6_m1 = m6_m1%plus(p%point(13)%enthalpy_s)
+        m6_m1 = m6_m1%divide(p%point(9)%enthalpy_s%minus(p%point(12)%enthalpy_s), btu_lbm)
+        call tex_begin()
+        write(13,"(A,F8.3)") "\frac{\dot{m}_{ 6}}{\dot{m}_{ 1}} = ", m6_m1%get_value()
+        call tex_end()
+        write(*,"(A,F8.3)") "m6/m1 = ", m6_m1%get_value()
+
+        
+        call tex_label("LP Turbine:")
+        lpt = create_Turbine(1, 3, "lpt", turbine_efficiency)
+        call lpt%add_input(create_Flow(3, (/m1,m3,m4/), p%point(6)))
+        call lpt%add_output(create_Flow(1, (/m5/), p%point(8)))
+        call lpt%add_output(create_Flow(1, (/m6/), p%point(9)))
+        call lpt%add_output(create_Flow(5, (/m1,m3,m4,m5,m6/), p%point(10)))
+        call lpt%print()
 
         ! Point 18
         call p%point(18)%given_T(645.0, F)
@@ -343,14 +373,6 @@ contains
         call p%point(20)%given_P(2350.0, psia)
 
         ! Point 21
-
-        call tex_label("LP Turbine:")
-        lpt = create_Turbine(1, 3, "lpt", turbine_efficiency)
-        call lpt%add_input(create_Flow(3, (/m1,m3,m4/), p%point(6)))
-        call lpt%add_output(create_Flow(1, (/m5/), p%point(8)))
-        call lpt%add_output(create_Flow(1, (/m6/), p%point(9)))
-        call lpt%add_output(create_Flow(5, (/m1,m3,m4,m5,m6/), p%point(10)))
-        call lpt%print()
 
         call tex_label("FP 1")
         fp1 = create_Pump(1, 1, "fp1", pump_efficiency)

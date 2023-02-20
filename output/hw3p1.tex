@@ -37,7 +37,7 @@ HP Turbine:
 \begin{equation}
 \frac{\dot{W}_{hpt,a}}{m_1} = (1 - \frac{\dot{m}_{ 3}}{\dot{m}_{ 1}})h_{ 3,a} - \frac{\dot{m}_{ 4}}{\dot{m}_{ 1}}h_{ 4,a} - (1 - \frac{\dot{m}_{ 3}}{\dot{m}_{ 1}} - \frac{\dot{m}_{ 4}}{\dot{m}_{ 1}})h_{ 5,a}\end{equation}
 
-\begin{equation}
+\begin{equation}\label{hpt_s}
 \frac{\dot{W}_{hpt,s}}{m_1} = (1 - \frac{\dot{m}_{ 3}}{\dot{m}_{ 1}})h_{ 3,s} - \frac{\dot{m}_{ 4}}{\dot{m}_{ 1}}h_{ 4,s} - (1 - \frac{\dot{m}_{ 3}}{\dot{m}_{ 1}} - \frac{\dot{m}_{ 4}}{\dot{m}_{ 1}})h_{ 5,s}\end{equation}
 
 \begin{equation}
@@ -301,8 +301,13 @@ h_{14,a} - h_{13,a}}{\dot{W}_{cbp,s} / \dot{m}_{1}}
 P_{13} = P_{12}
 \end{equation}
 
+Sat. liquid at P13:
 \begin{equation}
-s_{13,s} = s_{12,s}
+  h_{13,s} =  208.520\textnormal{ BTU/lbm                   }
+\end{equation}
+
+\begin{equation}
+  s_{13,s} =    0.353\textnormal{ BTU/lbm}\cdot\textnormal{R}
 \end{equation}
 
 \begin{equation}
@@ -314,28 +319,19 @@ P_{14} = P_{ 8}
 \end{equation}
 
 \begin{equation}
-x_{13.s} = (\frac{s_{13,s} - s_{f}}{s_fg})_{@P13} = \frac{   0.170 -    0.352}{   1.364} =    0.125
+  h_{14,s} =  209.958\textnormal{ BTU/lbm                   }
 \end{equation}
 
 \begin{equation}
-  h_{13,s} = (h_{f} + x_{13}h_{fg})_{@P13} =  207.585 + 0.12\cdot 952.650 =  326.603
-\textnormal{ BTU/lbm                   }
+h_{14,s} = -\frac{\dot{W}_{cbp,s}}{\dot{m}_{1}} + h_{13,s} =    1.438 +  208.520 =  209.958\textnormal{ BTU/lbm                   }
 \end{equation}
 
 \begin{equation}
-  h_{14,s} =  328.041\textnormal{ BTU/lbm                   }
+x_{14.s} = (\frac{h_{14,s} - h_{f}}{h_fg})_{@P14} = \frac{ 209.958 -  305.800}{ 883.100} =   -0.109
 \end{equation}
 
 \begin{equation}
-h_{14,s} = -\frac{\dot{W}_{cbp,s}}{\dot{m}_{1}} + h_{13,s} =    1.438 +  326.603 =  328.041\textnormal{ BTU/lbm                   }
-\end{equation}
-
-\begin{equation}
-x_{14.s} = (\frac{h_{14,s} - h_{f}}{h_fg})_{@P14} = \frac{ 328.041 -  305.800}{ 883.100} =    0.025
-\end{equation}
-
-\begin{equation}
-  s_{14,s} = (s_{f} + x_{14}s_{fg})_{@P14} =    0.483 + 0.03\cdot   1.111 =    0.511
+  s_{14,s} = (s_{f} + x_{14}s_{fg})_{@P14} =    0.483 + -.11\cdot   1.111 =    0.363
 \textnormal{ BTU/lbm}\cdot\textnormal{R}
 \end{equation}
 
@@ -343,17 +339,13 @@ x_{14.s} = (\frac{h_{14,s} - h_{f}}{h_fg})_{@P14} = \frac{ 328.041 -  305.800}{ 
 P_{15} = P_{ 8}
 \end{equation}
 
+Sat. liquid at P15:
 \begin{equation}
-s_{15,s} = s_{ 8,s}
+  h_{15,s} =  305.780\textnormal{ BTU/lbm                   }
 \end{equation}
 
 \begin{equation}
-x_{15.s} = (\frac{s_{15,s} - s_{f}}{s_fg})_{@P15} = \frac{   1.684 -    0.483}{   1.111} =    1.515
-\end{equation}
-
-\begin{equation}
-  h_{15,s} = (h_{f} + x_{15}h_{fg})_{@P15} =  305.800 + 1.52\cdot 883.100 = 1643.758
-\textnormal{ BTU/lbm                   }
+  s_{15,s} =    0.483\textnormal{ BTU/lbm}\cdot\textnormal{R}
 \end{equation}
 
 \begin{equation}
@@ -424,7 +416,7 @@ Using values for 500\(^{\circ}\) F from the superheated steam table:
 \end{equation}
 
 \begin{equation}
-\frac{\dot{m}_{4}}{\dot{m}_{1}} = \frac{1219.100 - 1197.700}{1640.618 -  419.880}} =    0.018
+\frac{\dot{m}_{4}}{\dot{m}_{1}} = \frac{1219.100 - 1197.700}{1640.618 -  419.880} =    0.018
 \end{equation}
 
 
@@ -446,6 +438,12 @@ Reheater:
 \end{equation}
 
 
+Plugging into equation (\ref{hpt_s}):
+\begin{equation}
+\frac{\dot{W}_{hpt,s}}{m_1} = -326.251
+\end{equation}
+
+
 Heat Exchanger 1
 \begin{equation}
 \dot{m}_{ 1}h_{14,s} + \dot{m}_{ 3}h_{ 7,s} + \dot{m}_{ 4}h_{17,s} + \dot{m}_{ 5}h_{ 8,s} = \dot{m}_{ 1}h_{16,s} + (\dot{m}_{ 3} + \dot{m}_{ 4} + \dot{m}_{ 5})h_{15,s}
@@ -460,7 +458,7 @@ h_{14,s} + \frac{\dot{m}_{ 3}}{\dot{m}_{ 1}}h_{ 7,s} + \frac{\dot{m}_{ 4}}{\dot{
 \end{equation}
 
 \begin{equation}
-\frac{\dot{m}_{5}}{\dot{m}_{1}} = Infinity
+\frac{\dot{m}_{5}}{\dot{m}_{1}} =    0.718
 \end{equation}
 
 
@@ -475,6 +473,10 @@ Open Heater:
 
 \begin{equation}
 \frac{\dot{m}_{ 6}}{\dot{m}_{ 1}} = \frac{h_{12,s}(\frac{\dot{m}_{3}}{\dot{m}_{1}} + \frac{\dot{m}_{4}}{\dot{m}_{1}} + \frac{\dot{m}_{5}}{\dot{m}_{1}} - 1) - h_{15,s}(\frac{\dot{m}_{3}}{\dot{m}_{1}} + \frac{\dot{m}_{4}}{\dot{m}_{1}} + \frac{\dot{m}_{5}}{\dot{m}_{1}}) + h_{13,s}}{h_{9,s} - h_{12,s}}
+\end{equation}
+
+\begin{equation}
+\frac{\dot{m}_{ 6}}{\dot{m}_{ 1}} =   -0.045
 \end{equation}
 
 \begin{equation}
@@ -506,7 +508,7 @@ LP Turbine:
 \begin{equation}
 \frac{\dot{W}_{lpt,a}}{m_1} = (1 - \frac{\dot{m}_{ 3}}{\dot{m}_{ 1}} - \frac{\dot{m}_{ 4}}{\dot{m}_{ 1}})h_{ 6,a} - \frac{\dot{m}_{ 5}}{\dot{m}_{ 1}}h_{ 8,a} - \frac{\dot{m}_{ 6}}{\dot{m}_{ 1}}h_{ 9,a} - (1 - \frac{\dot{m}_{ 3}}{\dot{m}_{ 1}} - \frac{\dot{m}_{ 4}}{\dot{m}_{ 1}} - \frac{\dot{m}_{ 5}}{\dot{m}_{ 1}} - \frac{\dot{m}_{ 6}}{\dot{m}_{ 1}})h_{10,a}\end{equation}
 
-\begin{equation}
+\begin{equation}\label{lpt_s}
 \frac{\dot{W}_{lpt,s}}{m_1} = (1 - \frac{\dot{m}_{ 3}}{\dot{m}_{ 1}} - \frac{\dot{m}_{ 4}}{\dot{m}_{ 1}})h_{ 6,s} - \frac{\dot{m}_{ 5}}{\dot{m}_{ 1}}h_{ 8,s} - \frac{\dot{m}_{ 6}}{\dot{m}_{ 1}}h_{ 9,s} - (1 - \frac{\dot{m}_{ 3}}{\dot{m}_{ 1}} - \frac{\dot{m}_{ 4}}{\dot{m}_{ 1}} - \frac{\dot{m}_{ 5}}{\dot{m}_{ 1}} - \frac{\dot{m}_{ 6}}{\dot{m}_{ 1}})h_{10,s}\end{equation}
 
 \begin{equation}
