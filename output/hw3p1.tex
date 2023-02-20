@@ -28,23 +28,6 @@ Cycle Efficiency:
 \eta_{p} =    0.800
 \end{equation}
 
-
-HP Turbine:
-\begin{equation}
-(\dot{m}_{ 1} - \dot{m}_{ 3})h_{ 3,a} = \dot{m}_{ 4}h_{ 4,a} + (\dot{m}_{ 1} - \dot{m}_{ 3} - \dot{m}_{ 4})h_{ 5,a} + \dot{W}_{hpt,a}
-\end{equation}
-
-\begin{equation}
-\frac{\dot{W}_{hpt,a}}{m_1} = (1 - \frac{\dot{m}_{ 3}}{\dot{m}_{ 1}})h_{ 3,a} - \frac{\dot{m}_{ 4}}{\dot{m}_{ 1}}h_{ 4,a} - (1 - \frac{\dot{m}_{ 3}}{\dot{m}_{ 1}} - \frac{\dot{m}_{ 4}}{\dot{m}_{ 1}})h_{ 5,a}\end{equation}
-
-\begin{equation}\label{hpt_s}
-\frac{\dot{W}_{hpt,s}}{m_1} = (1 - \frac{\dot{m}_{ 3}}{\dot{m}_{ 1}})h_{ 3,s} - \frac{\dot{m}_{ 4}}{\dot{m}_{ 1}}h_{ 4,s} - (1 - \frac{\dot{m}_{ 3}}{\dot{m}_{ 1}} - \frac{\dot{m}_{ 4}}{\dot{m}_{ 1}})h_{ 5,s}\end{equation}
-
-\begin{equation}
-\eta_{hpt} =    0.950 = \frac{\dot{W}_{hpt,a} / \dot{m}_{1}}{\dot{W}_{hpt,s} / \dot{m}_{1}} = \frac{
-(1 - \frac{\dot{m}_{ 3}}{\dot{m}_{ 1}})h_{ 3,a} - \frac{\dot{m}_{ 4}}{\dot{m}_{ 1}}h_{ 4,a} - (1 - \frac{\dot{m}_{ 3}}{\dot{m}_{ 1}} - \frac{\dot{m}_{ 4}}{\dot{m}_{ 1}})h_{ 5,a}}{\dot{W}_{hpt,s} / \dot{m}_{1}}
-\end{equation}
-
 \begin{equation}
 x_{ 2,s} =   95.000\%
 \end{equation}
@@ -438,6 +421,23 @@ Reheater:
 \end{equation}
 
 
+HP Turbine:
+\begin{equation}
+(\dot{m}_{ 1} - \dot{m}_{ 3})h_{ 3,a} = \dot{m}_{ 4}h_{ 4,a} + (\dot{m}_{ 1} - \dot{m}_{ 3} - \dot{m}_{ 4})h_{ 5,a} + \dot{W}_{hpt,a}
+\end{equation}
+
+\begin{equation}
+\frac{\dot{W}_{hpt,a}}{m_1} = (1 - \frac{\dot{m}_{ 3}}{\dot{m}_{ 1}})h_{ 3,a} - \frac{\dot{m}_{ 4}}{\dot{m}_{ 1}}h_{ 4,a} - (1 - \frac{\dot{m}_{ 3}}{\dot{m}_{ 1}} - \frac{\dot{m}_{ 4}}{\dot{m}_{ 1}})h_{ 5,a}\end{equation}
+
+\begin{equation}\label{hpt_s}
+\frac{\dot{W}_{hpt,s}}{m_1} = (1 - \frac{\dot{m}_{ 3}}{\dot{m}_{ 1}})h_{ 3,s} - \frac{\dot{m}_{ 4}}{\dot{m}_{ 1}}h_{ 4,s} - (1 - \frac{\dot{m}_{ 3}}{\dot{m}_{ 1}} - \frac{\dot{m}_{ 4}}{\dot{m}_{ 1}})h_{ 5,s}\end{equation}
+
+\begin{equation}
+\eta_{hpt} =    0.950 = \frac{\dot{W}_{hpt,a} / \dot{m}_{1}}{\dot{W}_{hpt,s} / \dot{m}_{1}} = \frac{
+(1 - \frac{\dot{m}_{ 3}}{\dot{m}_{ 1}})h_{ 3,a} - \frac{\dot{m}_{ 4}}{\dot{m}_{ 1}}h_{ 4,a} - (1 - \frac{\dot{m}_{ 3}}{\dot{m}_{ 1}} - \frac{\dot{m}_{ 4}}{\dot{m}_{ 1}})h_{ 5,a}}{\dot{W}_{hpt,s} / \dot{m}_{1}}
+\end{equation}
+
+
 Plugging into equation (\ref{hpt_s}):
 \begin{equation}
 \frac{\dot{W}_{hpt,s}}{m_1} = -326.251
@@ -479,26 +479,6 @@ Open Heater:
 \frac{\dot{m}_{ 6}}{\dot{m}_{ 1}} =   -0.045
 \end{equation}
 
-\begin{equation}
-T_{18} =  645.000\textnormal{ \(^{\circ}\)F             }
-\end{equation}
-
-\begin{equation}
-P_{18} = 2350.000\textnormal{ psia                      }
-\end{equation}
-
-\begin{equation}
-T_{19} =  575.000\textnormal{ \(^{\circ}\)F             }
-\end{equation}
-
-\begin{equation}
-P_{19} = 2250.000\textnormal{ psia                      }
-\end{equation}
-
-\begin{equation}
-P_{20} = 2350.000\textnormal{ psia                      }
-\end{equation}
-
 
 LP Turbine:
 \begin{equation}
@@ -517,37 +497,43 @@ LP Turbine:
 \end{equation}
 
 
-FP 1
+Plugging into equation (\ref{lpt_s}):
 \begin{equation}
-\dot{m}_{ 2}h_{ 1,a} = \dot{m}_{ 2}h_{21,a} + \dot{W}_{fp1,a}
+\frac{\dot{W}_{lpt,s}}{m_1} =  -81.276
 \end{equation}
 
 \begin{equation}
--\frac{\dot{W}_{fp1,a}}{m_1} = \frac{\dot{m}_{ 2}}{\dot{m}_{ 1}}h_{21,a} - \frac{\dot{m}_{ 2}}{\dot{m}_{ 1}}h_{ 1,a}\end{equation}
-
-\begin{equation}
--\frac{\dot{W}_{fp1,s}}{m_1} = \frac{\dot{m}_{ 2}}{\dot{m}_{ 1}}h_{21,s} - \frac{\dot{m}_{ 2}}{\dot{m}_{ 1}}h_{ 1,s}\end{equation}
-
-\begin{equation}
-\eta_{fp1} =    0.800 = \frac{\dot{W}_{fp1,a} / \dot{m}_{1}}{\dot{W}_{fp1,s} / \dot{m}_{1}} = \frac{
-\frac{\dot{m}_{ 2}}{\dot{m}_{ 1}}h_{21,a} - \frac{\dot{m}_{ 2}}{\dot{m}_{ 1}}h_{ 1,a}}{\dot{W}_{fp1,s} / \dot{m}_{1}}
-\end{equation}
-
-
-FP 2
-\begin{equation}
-\dot{m}_{ 2}h_{ 1,a} = \dot{m}_{ 2}h_{21,a} + \dot{W}_{fp2,a}
+T_{18} =  645.000\textnormal{ \(^{\circ}\)F             }
 \end{equation}
 
 \begin{equation}
--\frac{\dot{W}_{fp2,a}}{m_1} = \frac{\dot{m}_{ 2}}{\dot{m}_{ 1}}h_{21,a} - \frac{\dot{m}_{ 2}}{\dot{m}_{ 1}}h_{ 1,a}\end{equation}
+P_{18} = 2350.000\textnormal{ psia                      }
+\end{equation}
+
+Using the tables for superheated vapor at P=2400 psia \& T=700 \(^{\circ}\)F:
+\begin{equation}
+  h_{18,s} = 1191.600\textnormal{ BTU/lbm                   }
+\end{equation}
 
 \begin{equation}
--\frac{\dot{W}_{fp2,s}}{m_1} = \frac{\dot{m}_{ 2}}{\dot{m}_{ 1}}h_{21,s} - \frac{\dot{m}_{ 2}}{\dot{m}_{ 1}}h_{ 1,s}\end{equation}
+  s_{18,s} =    1.323\textnormal{ BTU/lbm}\cdot\textnormal{R}
+\end{equation}
 
 \begin{equation}
-\eta_{fp2} =    0.800 = \frac{\dot{W}_{fp2,a} / \dot{m}_{1}}{\dot{W}_{fp2,s} / \dot{m}_{1}} = \frac{
-\frac{\dot{m}_{ 2}}{\dot{m}_{ 1}}h_{21,a} - \frac{\dot{m}_{ 2}}{\dot{m}_{ 1}}h_{ 1,a}}{\dot{W}_{fp2,s} / \dot{m}_{1}}
+T_{19} =  575.000\textnormal{ \(^{\circ}\)F             }
+\end{equation}
+
+\begin{equation}
+P_{19} = 2250.000\textnormal{ psia                      }
+\end{equation}
+
+Interpolating using the tables for superheated liquid at P=2250 psia \& T= \(^{\circ}\)F:
+\begin{equation}
+  h_{19,s} =  701.360\textnormal{ BTU/lbm                   }
+\end{equation}
+
+\begin{equation}
+  s_{19,s} =    0.888\textnormal{ BTU/lbm}\cdot\textnormal{R}
 \end{equation}
 
 
@@ -567,21 +553,92 @@ RCP 1
 \frac{\dot{m}_{ 7}}{\dot{m}_{ 1}}h_{20,a} - \frac{\dot{m}_{ 7}}{\dot{m}_{ 1}}h_{19,a}}{\dot{W}_{rcp,s} / \dot{m}_{1}}
 \end{equation}
 
-
-RCP 2
 \begin{equation}
-\dot{m}_{ 7}h_{19,a} = \dot{m}_{ 7}h_{20,a} + \dot{W}_{rcp,a}
+P_{20} = 2350.000\textnormal{ psia                      }
 \end{equation}
 
 \begin{equation}
--\frac{\dot{W}_{rcp,a}}{m_1} = \frac{\dot{m}_{ 7}}{\dot{m}_{ 1}}h_{20,a} - \frac{\dot{m}_{ 7}}{\dot{m}_{ 1}}h_{19,a}\end{equation}
+-\frac{\dot{W}_{rcp,s}}{\dot{m}_{ 1}} = h_{20,s} - h_{19,s} = v_{@P19}(P_{20} - P_{19}) =    0.027(2350.000 - 2250.000) =    2.698\textnormal{ BTU/lbm                   }
+\end{equation}
 
 \begin{equation}
--\frac{\dot{W}_{rcp,s}}{m_1} = \frac{\dot{m}_{ 7}}{\dot{m}_{ 1}}h_{20,s} - \frac{\dot{m}_{ 7}}{\dot{m}_{ 1}}h_{19,s}\end{equation}
+  h_{20,s} =  704.058\textnormal{ BTU/lbm                   }
+\end{equation}
 
 \begin{equation}
-\eta_{rcp} =    0.800 = \frac{\dot{W}_{rcp,a} / \dot{m}_{1}}{\dot{W}_{rcp,s} / \dot{m}_{1}} = \frac{
-\frac{\dot{m}_{ 7}}{\dot{m}_{ 1}}h_{20,a} - \frac{\dot{m}_{ 7}}{\dot{m}_{ 1}}h_{19,a}}{\dot{W}_{rcp,s} / \dot{m}_{1}}
+h_{20,s} = -\frac{\dot{W}_{rcp,s}}{\dot{m}_{1}} + h_{19,s} =    2.698 +  701.360 =  704.058\textnormal{ BTU/lbm                   }
+\end{equation}
+
+\begin{equation}
+x_{20.s} = (\frac{h_{20,s} - h_{f}}{h_fg})_{@P20} = \frac{ 704.058 -  713.100}{ 395.400} =   -0.023
+\end{equation}
+
+\begin{equation}
+  s_{20,s} = (s_{f} + x_{20}s_{fg})_{@P20} =    0.898 + -.02\cdot   0.354 =    0.890
+\textnormal{ BTU/lbm}\cdot\textnormal{R}
+\end{equation}
+
+
+FP 1
+\begin{equation}
+\dot{m}_{ 2}h_{ 1,a} = \dot{m}_{ 2}h_{21,a} + \dot{W}_{fp1,a}
+\end{equation}
+
+\begin{equation}
+-\frac{\dot{W}_{fp1,a}}{m_1} = \frac{\dot{m}_{ 2}}{\dot{m}_{ 1}}h_{21,a} - \frac{\dot{m}_{ 2}}{\dot{m}_{ 1}}h_{ 1,a}\end{equation}
+
+\begin{equation}
+-\frac{\dot{W}_{fp1,s}}{m_1} = \frac{\dot{m}_{ 2}}{\dot{m}_{ 1}}h_{21,s} - \frac{\dot{m}_{ 2}}{\dot{m}_{ 1}}h_{ 1,s}\end{equation}
+
+\begin{equation}
+\eta_{fp1} =    0.800 = \frac{\dot{W}_{fp1,a} / \dot{m}_{1}}{\dot{W}_{fp1,s} / \dot{m}_{1}} = \frac{
+\frac{\dot{m}_{ 2}}{\dot{m}_{ 1}}h_{21,a} - \frac{\dot{m}_{ 2}}{\dot{m}_{ 1}}h_{ 1,a}}{\dot{W}_{fp1,s} / \dot{m}_{1}}
+\end{equation}
+
+\begin{equation}
+P_{21} = frac\{1}{2} P_{1}
+\end{equation}
+
+\begin{equation}
+P_{21} =  290.000\textnormal{ psia                      }
+\end{equation}
+
+\begin{equation}
+-\frac{\dot{W}_{fp,s}}{\dot{m}_{ 1}} = h_{21,s} - h_{1,s} = v_{@P1}(P_{21} - P_{1}) =    0.020( 290.000 -  580.000) =   -5.816\textnormal{ BTU/lbm                   }
+\end{equation}
+
+\begin{equation}
+  h_{21,s} = 1213.284\textnormal{ BTU/lbm                   }
+\end{equation}
+
+\begin{equation}
+h_{21,s} = -\frac{\dot{W}_{fp,s}}{\dot{m}_{1}} + h_{21,s} =   -5.816 + 1219.100 = 1213.284\textnormal{ BTU/lbm                   }
+\end{equation}
+
+\begin{equation}
+x_{21.s} = (\frac{h_{21,s} - h_{f}}{h_fg})_{@P21} = \frac{1213.284 -  389.345}{ 812.855} =    1.014
+\end{equation}
+
+\begin{equation}
+  s_{21,s} = (s_{f} + x_{21}s_{fg})_{@P21} =    0.583 + 1.01\cdot   0.932 =    1.528
+\textnormal{ BTU/lbm}\cdot\textnormal{R}
+\end{equation}
+
+
+FP 2
+\begin{equation}
+\dot{m}_{ 2}h_{ 1,a} = \dot{m}_{ 2}h_{21,a} + \dot{W}_{fp2,a}
+\end{equation}
+
+\begin{equation}
+-\frac{\dot{W}_{fp2,a}}{m_1} = \frac{\dot{m}_{ 2}}{\dot{m}_{ 1}}h_{21,a} - \frac{\dot{m}_{ 2}}{\dot{m}_{ 1}}h_{ 1,a}\end{equation}
+
+\begin{equation}
+-\frac{\dot{W}_{fp2,s}}{m_1} = \frac{\dot{m}_{ 2}}{\dot{m}_{ 1}}h_{21,s} - \frac{\dot{m}_{ 2}}{\dot{m}_{ 1}}h_{ 1,s}\end{equation}
+
+\begin{equation}
+\eta_{fp2} =    0.800 = \frac{\dot{W}_{fp2,a} / \dot{m}_{1}}{\dot{W}_{fp2,s} / \dot{m}_{1}} = \frac{
+\frac{\dot{m}_{ 2}}{\dot{m}_{ 1}}h_{21,a} - \frac{\dot{m}_{ 2}}{\dot{m}_{ 1}}h_{ 1,a}}{\dot{W}_{fp2,s} / \dot{m}_{1}}
 \end{equation}
 
 
