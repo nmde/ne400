@@ -596,7 +596,7 @@ FP 1
 \end{equation}
 
 \begin{equation}
-P_{21} = frac\{1}{2} P_{1}
+P_{21} = \frac{1}{2} P_{1}
 \end{equation}
 
 \begin{equation}
@@ -625,24 +625,7 @@ x_{21.s} = (\frac{h_{21,s} - h_{f}}{h_fg})_{@P21} = \frac{1213.284 -  389.345}{ 
 \end{equation}
 
 
-FP 2
-\begin{equation}
-\dot{m}_{ 2}h_{ 1,a} = \dot{m}_{ 2}h_{21,a} + \dot{W}_{fp2,a}
-\end{equation}
-
-\begin{equation}
--\frac{\dot{W}_{fp2,a}}{m_1} = \frac{\dot{m}_{ 2}}{\dot{m}_{ 1}}h_{21,a} - \frac{\dot{m}_{ 2}}{\dot{m}_{ 1}}h_{ 1,a}\end{equation}
-
-\begin{equation}
--\frac{\dot{W}_{fp2,s}}{m_1} = \frac{\dot{m}_{ 2}}{\dot{m}_{ 1}}h_{21,s} - \frac{\dot{m}_{ 2}}{\dot{m}_{ 1}}h_{ 1,s}\end{equation}
-
-\begin{equation}
-\eta_{fp2} =    0.800 = \frac{\dot{W}_{fp2,a} / \dot{m}_{1}}{\dot{W}_{fp2,s} / \dot{m}_{1}} = \frac{
-\frac{\dot{m}_{ 2}}{\dot{m}_{ 1}}h_{21,a} - \frac{\dot{m}_{ 2}}{\dot{m}_{ 1}}h_{ 1,a}}{\dot{W}_{fp2,s} / \dot{m}_{1}}
-\end{equation}
-
-
-SG1
+SG1: 
 \begin{equation}
 \dot{m}_{ 7}h_{18,s} + \dot{m}_{ 2}h_{21,s} = \dot{m}_{ 7}h_{19,s} + \dot{m}_{ 2}h_{ 2,s}
 \end{equation}
@@ -651,14 +634,36 @@ SG1
 \frac{\dot{m}_{ 7}}{\dot{m}_{ 1}}h_{18,s} + \frac{\dot{m}_{ 2}}{\dot{m}_{ 1}}h_{21,s} = \frac{\dot{m}_{ 7}}{\dot{m}_{ 1}}h_{19,s} + \frac{\dot{m}_{ 2}}{\dot{m}_{ 1}}h_{ 2,s}
 \end{equation}
 
-
-SG2
 \begin{equation}
-\dot{m}_{ 7}h_{18,s} + \dot{m}_{ 2}h_{21,s} = \dot{m}_{ 7}h_{19,s} + \dot{m}_{ 2}h_{ 2,s}
+\frac{\dot{m}_{ 7}}{\dot{m}_{ 1}} =  \frac{\dot{m}_{ 2}}{\dot{m}_{ 1}}(\frac{h_{ 2,s} - h_{21,s}}{h_{18,s} - h_{19,s}})
 \end{equation}
 
 \begin{equation}
-\frac{\dot{m}_{ 7}}{\dot{m}_{ 1}}h_{18,s} + \frac{\dot{m}_{ 2}}{\dot{m}_{ 1}}h_{21,s} = \frac{\dot{m}_{ 7}}{\dot{m}_{ 1}}h_{19,s} + \frac{\dot{m}_{ 2}}{\dot{m}_{ 1}}h_{ 2,s}
+\frac{\dot{m}_{ 7}}{\dot{m}_{ 1}} = \frac{1}{2}\frac{\dot{m}_{ 8}}{\dot{m}_{ 1}} 
+\end{equation}
+
+\begin{equation}
+\frac{\dot{m}_{ 2}}{\dot{m}_{1}} = \frac{1}{2}
+\end{equation}
+
+\begin{equation}
+\frac{\dot{m}_{ 8}}{\dot{m}_{ 1}} = \frac{h_{ 2,s} - h_{21,s}}{h_{18,s} - h_{19,s}}
+\end{equation}
+
+\begin{equation}
+\frac{\dot{m}_{ 8}}{\dot{m}_{ 1}} = \frac{1152.778 - 1213.284}{1191.600 -  701.360} =   -0.123
+\end{equation}
+
+
+Reactor:
+\begin{equation}
+\dot{Q}_{h} + \dot{m}_{ 8}h_{20,a} = \dot{m}_{ 8}h_{18,a}\end{equation}
+
+\begin{equation}
+\frac{\dot{Q}_{h}}{\dot{m}_{1}} = \frac{\dot{m}_{ 8}}{\dot{m}_{ 1}}h_{18,a} - \frac{\dot{m}_{ 8}}{\dot{m}_{ 1}}h_{20,a}\end{equation}
+
+\begin{equation}
+\frac{\dot{Q}_{h}}{\dot{m}_{1}} =  -60.173\textnormal{ BTU/lbm                   }
 \end{equation}
 
 

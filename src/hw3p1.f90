@@ -6,6 +6,7 @@ module hw3p1
     use class_Turbine
     use class_Pump
     use class_HeatExchanger
+    use class_Boiler
     use SteamTable
     use common
 
@@ -17,11 +18,13 @@ contains
     subroutine hw3_problem_1
         type(Problem)::p
         type(Turbine)::hpt,lpt
-        type(Pump)::cp,cbp,fp1,fp2,rcp1,rcp2
-        type(HeatExchanger)::open_heater,he1,he2,rh,sg1,sg2
+        type(Pump)::cp,cbp,fp1,rcp1
+        type(HeatExchanger)::open_heater,he1,he2,rh,sg1
+        type(Boiler)::Rx
         type(Efficiency)::cycle_efficiency
         type(MassFlow)::m1,m2,m3,m4,m5,m6,mp,mc
-        type(Quantity)::vf,Wcps,temp,Wcbps,m4_m1,m3_m1,m5_m1,m6_m1,Whpts,Wlpts,Wrcps,Wfps
+        type(Quantity)::vf,Wcps,temp,Wcbps,m4_m1,m3_m1,m5_m1,m6_m1,Whpts,Wlpts,Wrcps,Wfps,m8_m1,Qh, &
+            eta_s,eta_a,Wfps_total,Wrcps_total
         real::turbine_efficiency,pump_efficiency
 
         p = create_problem(21, 1, "hw3p1.tex")
@@ -454,7 +457,7 @@ contains
         call p%point(21)%calc_s_s()
         call p%report_point(21)
 
-        call tex_label("SG1")
+        call tex_label("SG1: ")
         sg1 = create_HeatExchanger(2, 2)
         call sg1%add_input(create_Flow(1, (/mp/), p%point(18)))
         call sg1%add_input(create_Flow(1, (/m2/), p%point(21)))
@@ -462,7 +465,52 @@ contains
         call sg1%add_output(create_Flow(1, (/m2/), p%point(2)))
         call sg1%print()
 
+        call tex_begin()
+        write(13,"(A)") "\frac{\dot{m}_{ 7}}{\dot{m}_{ 1}} =  \frac{\dot{m}_{ 2}}{\dot{m}_{ 1}}(\frac{h_{ 2,s} - " &
+            // "h_{21,s}}{h_{18,s} - h_{19,s}})"
+        call tex_end()
+
+        call tex_begin()
+        write(13,"(A)") "\frac{\dot{m}_{ 7}}{\dot{m}_{ 1}} = \frac{1}{2}\frac{\dot{m}_{ 8}}{\dot{m}_{ 1}} "
+        call tex_end()
+
+        call tex_begin()
+        write(13,"(A)") "\frac{\dot{m}_{ 2}}{\dot{m}_{1}} = \frac{1}{2}"
+        call tex_end()
+
+        call tex_begin()
+        write(13,"(A)") "\frac{\dot{m}_{ 8}}{\dot{m}_{ 1}} = \frac{h_{ 2,s} - h_{21,s}}{h_{18,s} - h_{19,s}}"
+        call tex_end()
+
+        m8_m1 = p%point(2)%enthalpy_s%minus(p%point(21)%enthalpy_s)
+        m8_m1 = m8_m1%divide(p%point(18)%enthalpy_s%minus(p%point(19)%enthalpy_s), unitless)
+        call tex_begin()
+        write(13,"(A,F8.3,A,F8.3,A,F8.3,A,F8.3,A,F8.3)") "\frac{\dot{m}_{ 8}}{\dot{m}_{ 1}} = \frac{", &
+            p%point(2)%enthalpy_s%get_value(), " - ", p%point(21)%enthalpy_s%get_value(), "}{", &
+            p%point(18)%enthalpy_s%get_value(), " - ", p%point(19)%enthalpy_s%get_value(), "} = ", &
+            m8_m1%get_value()
+        call tex_end()
+
+        call tex_label("Reactor:")
+        Rx = create_Boiler(1, 1)
+        call Rx%add_input(create_Flow(1, (/mc/), p%point(20)))
+        call Rx%add_output(create_Flow(1, (/mc/), p%point(18)))
+        call Rx%print()
+
+        Qh = m8_m1%times(p%point(18)%enthalpy_s, btu_lbm)
+        Qh = Qh%minus(m8_m1%times(p%point(20)%enthalpy_s, btu_lbm))
+        call tex_begin()
+        write(13,"(A,F8.3,A)") "\frac{\dot{Q}_{h}}{\dot{m}_{1}} = ", Qh%get_value(), tex_units(Qh)
+        call tex_end()
+
+        Wfps_total = Wfps%plus(Wfps)
+        Wrcps_total = Wrcps%plus(Wrcps)
+        eta_s = Whpts%plus(Wlpts%plus(Wcps%plus(Wcbps%plus(Wfps_total%plus(Wrcps_total)))))
+        eta_s = eta_s%divide(Qh, unitless)
+
         call tex_end_document()
         call p%report_all_solved()
+
+        write(*,"(A,F8.3)") "Cycle efficiency: ", eta_s%get_value()
     end subroutine hw3_problem_1
 end module hw3p1
