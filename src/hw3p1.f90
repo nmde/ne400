@@ -47,7 +47,7 @@ contains
         mc = create_MassFlow(8)
 
         call tex_label("Cycle Efficiency:")
-        cycle_efficiency = create_Efficiency(8, 1, "\eta_{a}")
+        cycle_efficiency = create_Efficiency(8, 1, "\eta")
         call cycle_efficiency%add_input("htp")
         call cycle_efficiency%add_input("ltp")
         call cycle_efficiency%add_input("cp")
@@ -154,6 +154,7 @@ contains
             vf%get_value(), "(", p%point(12)%pressure%get_value(), " - ", p%point(11)%pressure%get_value(), &
             ") = ", Wcps%get_value(), tex_units(Wcps)
         call tex_end()
+        call Wcps%to_abs()
         write(*,"(A,F8.3)") "Wcp = ", Wcps%get_value()
 
         temp = Wcps%plus(p%point(11)%enthalpy_s)
@@ -194,6 +195,7 @@ contains
             vf%get_value(), "(", p%point(14)%pressure%get_value(), " - ", p%point(13)%pressure%get_value(), &
             ") = ", Wcbps%get_value(), tex_units(Wcbps)
         call tex_end()
+        call Wcbps%to_abs()
         write(*,"(A,F8.3)") "Wcbp = ", Wcbps%get_value()
 
         temp = Wcbps%plus(p%point(13)%enthalpy_s)
@@ -301,6 +303,7 @@ contains
         call tex_begin()
         write(13,"(A,F8.3)") "\frac{\dot{W}_{hpt,s}}{m_1} = ", Whpts%get_value()
         call tex_end()
+        call Whpts%to_abs()
         write(*,"(A,F8.3,A)") "Whpts = ", Whpts%get_value(), tex_units(Whpts)
 
         call tex_label("Heat Exchanger 1")
@@ -373,6 +376,7 @@ contains
         call tex_begin()
         write(13,"(A,F8.3)") "\frac{\dot{W}_{lpt,s}}{m_1} = ", Wlpts%get_value()
         call tex_end()
+        call Wlpts%to_abs()
         write(*,"(A,F8.3,A)") "Wlpts = ", Wlpts%get_value(), tex_units(Wlpts)
 
         ! Point 18
@@ -408,7 +412,8 @@ contains
             vf%get_value(), "(", p%point(20)%pressure%get_value(), " - ", p%point(19)%pressure%get_value(), &
             ") = ", Wrcps%get_value(), tex_units(Wrcps)
         call tex_end()
-        write(*,"(A,F8.3)") "Wrcp = ", Wrcps%get_value()
+        call Wrcps%to_abs()
+        write(*,"(A,F8.3)") "Wrcp = ", Wrcps%get_value(), tex_units(Wrcps)
 
         temp = Wrcps%plus(p%point(19)%enthalpy_s)
         call p%point(20)%set_h_s(real(temp%get_value(), 4), btu_lbm)
@@ -443,6 +448,7 @@ contains
             vf%get_value(), "(", p%point(21)%pressure%get_value(), " - ", p%point(1)%pressure%get_value(), &
             ") = ", Wfps%get_value(), tex_units(Wfps)
         call tex_end()
+        call Wfps%to_abs()
         write(*,"(A,F8.3)") "Wfps = ", Wfps%get_value(), tex_units(Wfps)
 
         temp = Wfps%plus(p%point(1)%enthalpy_s)
@@ -503,10 +509,24 @@ contains
         write(13,"(A,F8.3,A)") "\frac{\dot{Q}_{h}}{\dot{m}_{1}} = ", Qh%get_value(), tex_units(Qh)
         call tex_end()
 
+        temp = Q(1D0, unitless)
+        temp = temp%minus(m3_m1%minus(m4_m1%minus(m5_m1%minus(m6_m1))))
+        Wcps = p%point(12)%enthalpy_s%times(temp, btu_lbm)
+        Wcps = Wcps%minus(p%point(11)%enthalpy_s%times(temp, btu_lbm))
+        call tex_begin()
+        write(13,"(A,F8.3,A)") "-\frac{\dot{W}_{cp ,s}}{m_1} = ", Wcps%get_value(), tex_units(Wcps)
+        call tex_end()
+
         Wfps_total = Wfps%plus(Wfps)
         Wrcps_total = Wrcps%plus(Wrcps)
         eta_s = Whpts%plus(Wlpts%plus(Wcps%plus(Wcbps%plus(Wfps_total%plus(Wrcps_total)))))
         eta_s = eta_s%divide(Qh, unitless)
+        call tex_begin()
+        write(13,"(A,F8.3,A,F8.3,A,F8.3,A,F8.3,A,F8.3,A,F8.3,A,F8.3,A,F8.3,A,F8.3)") "\eta_{s} = \frac{", &
+            Whpts%get_value(), " + ", Wlpts%get_value() , " + ", &
+            Wcps%get_value(), " + ", Wcbps%get_value(), " + ", Wfps_total%get_value(), " + ", Wrcps%get_value(), &
+            "}{", Qh%get_value(), "} = ", eta_s%get_value()
+        call tex_end()
 
         call tex_end_document()
         call p%report_all_solved()

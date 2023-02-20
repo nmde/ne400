@@ -51,12 +51,30 @@ contains
         integer::i
 
         call tex_begin()
-        write(13,"(A)",advance="no") this%label // " = \frac{"
+        write(13,"(A)",advance="no") this%label // "_{s} = \frac{"
         do i=1,this%num_inputs
             if (i > 1) then
                 write(13,"(A)",advance="no") " + "
             end if
-            write(13,"(A)",advance="no") "\dot{W}_{" // this%inputs(i) // "} / \dot{m}_{1}"
+            write(13,"(A)",advance="no") "\dot{W}_{" // this%inputs(i) // ",s} / \dot{m}_{1}"
+        end do
+        write(13,"(A)",advance="no") "}{"
+        do i=1,this%num_outputs
+            if (i > 1) then
+                write(13,"(A)",advance="no") " + "
+            end if
+            write(13,"(A)",advance="no") "\dot{Q}_{" // this%outputs(i) // "} / \dot{m}_{1}"
+        end do
+        write(13,"(A)") "}"
+        call tex_end()
+
+        call tex_begin()
+        write(13,"(A)",advance="no") this%label // "_{a} = \frac{"
+        do i=1,this%num_inputs
+            if (i > 1) then
+                write(13,"(A)",advance="no") " + "
+            end if
+            write(13,"(A)",advance="no") "\dot{W}_{" // this%inputs(i) // ",a} / \dot{m}_{1}"
         end do
         write(13,"(A)",advance="no") "}{"
         do i=1,this%num_outputs

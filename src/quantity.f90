@@ -16,7 +16,7 @@ module class_Quantity
         integer::unit
 
     contains
-        procedure::get_value,get_unit,get_in,plus,minus,times,divide,get_unit_str,is_known
+        procedure::get_value,get_unit,get_in,plus,minus,times,divide,get_unit_str,is_known,to_abs
     end type Quantity
 
 contains
@@ -35,6 +35,14 @@ contains
 
         value = this%value
     end function get_value
+
+    subroutine to_abs(this)
+        class(Quantity),intent(inout)::this
+
+        if (this%value < 1) then
+            this%value = -1 * this%value
+        end if
+    end subroutine to_abs
 
     function get_unit(this) result(unit)
         class(Quantity),intent(in)::this
