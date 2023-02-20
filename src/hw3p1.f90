@@ -21,7 +21,7 @@ contains
         type(HeatExchanger)::open_heater,he1,he2,rh,sg1,sg2
         type(Efficiency)::cycle_efficiency
         type(MassFlow)::m1,m2,m3,m4,m5,m6,mp,mc
-        type(Quantity)::vf,Wcp,temp,Wcbp,m4_m1
+        type(Quantity)::vf,Wcp,temp,Wcbp,m4_m1,m3_m1,m5_m1
         real::turbine_efficiency,pump_efficiency
 
         p = create_problem(21, 1, "hw3p1.tex")
@@ -276,6 +276,17 @@ contains
          // "h_{5,s})}{h_{6,s} + h_{2,s} - h_{5,s} - h_{7,s}}"
         call tex_end()
 
+        m3_m1 = m4_m1%minus(Q(1D0,unitless))
+        m3_m1 = m3_m1%times(p%point(6)%enthalpy_s%minus(p%point(5)%enthalpy_s), unitless)
+        m3_m1 = m3_m1%divide(p%point(6)%enthalpy_s%plus(p%point(2)%enthalpy_s%minus(p%point(5)%enthalpy_s%minus &
+            (p%point(7)%enthalpy_s))), unitless)
+        call tex_begin()
+        write(13,"(A,F8.3,A,F8.3,A,F8.3,A,F8.3,A,F8.3,A,F8.3,A,F8.3,A,F8.3)") "\frac{\dot{m}_{3}}{\dot{m}_{1}} = -\frac{(", &
+            m4_m1%get_value(), " - 1)(", p%point(6)%enthalpy_s%get_value(), " - ", p%point(5)%enthalpy_s%get_value(), &
+            ")}{", p%point(6)%enthalpy_s%get_value(), " + ", p%point(2)%enthalpy_s%get_value(), " - ", &
+            p%point(5)%enthalpy_s%get_value(), " - ", p%point(7)%enthalpy_s%get_value(), "} = ", m3_m1%get_value()
+        call tex_end()
+
         call tex_label("Heat Exchanger 1")
         he1 = create_HeatExchanger(4, 2)
         call he1%add_input(create_Flow(1, (/m1/), p%point(14)))
@@ -290,6 +301,17 @@ contains
         write(13,"(A)") "\frac{\dot{m}_{5}}{\dot{m}_{1}} = \frac{\frac{\dot{m}_{3}}{\dot{m}_{1}}(h_{15,s} - h_{7,s}) + " &
             // "\frac{\dot{m}_{4}}{\dot{m}_{1}}h_{15,s} - \frac{\dot{m}_{4}}{\dot{m}_{1}}h_{17,s} - h_{14,s} + " &
             // "h_{16,s}}{h_{8,s} - h_{15,s}}"
+        call tex_end()
+
+        write(*,"(A)") "m5_m1:"
+        m5_m1 = m3_m1%times(p%point(15)%enthalpy_s%minus(p%point(7)%enthalpy_s), btu_lbm)
+        m5_m1 = m5_m1%plus(m4_m1%times(p%point(15)%enthalpy_s, btu_lbm))
+        m5_m1 = m5_m1%minus(m4_m1%times(p%point(17)%enthalpy_s, btu_lbm))
+        m5_m1 = m5_m1%minus(p%point(14)%enthalpy_s)
+        m5_m1 = m5_m1%plus(p%point(16)%enthalpy_s)
+        m5_m1 = m5_m1%divide(p%point(8)%enthalpy_s%minus(p%point(15)%enthalpy_s), unitless)
+        call tex_begin()
+        write(13,"(A,F8.3)") "\frac{\dot{m}_{5}}{\dot{m}_{1}} = ", m5_m1%get_value()
         call tex_end()
 
         call tex_label("Open Heater:")
