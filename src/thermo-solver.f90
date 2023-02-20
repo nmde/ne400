@@ -1,5 +1,5 @@
 module thermo_solver
-  use hw3p1, only: hw3_problem_1
+  use ne401project
 
   implicit none
   private
@@ -7,6 +7,6 @@ module thermo_solver
   public::solve
 contains
   subroutine solve
-    call hw3_problem_1()
+    call project()
   end subroutine solve
 end module thermo_solver

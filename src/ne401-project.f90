@@ -5,13 +5,36 @@ module ne401project
     public::project
 contains
     subroutine project()
-        integer::bigM,bigI,i,n_max
+        integer::bigM,bigI,i,n_max,io_stat,regions
         real*16,allocatable::nu(:),w(:),sigma_t(:),sigma_s(:),sigma_f(:), &
             S(:),x(:)
+        real*16::sigma_t_const,sigma_s_const,sigma_f_const,S_const,x_0,x_1,step,left_boundary,right_boundary
+        character(64)::input_file
+        character(1)::temp
 
-        bigM = 8
-        bigI = 10
-        n_max = 5
+        !write(*,"(A)",advance="no") "Path to input file: "
+        !read(*,*) input_file
+        input_file = "C:\Users\dmnev\Documents\nmde\thermo\input\test1.txt" ! TODO - remove this
+        open(unit=11,file=input_file,action="read",iostat=io_stat)
+        if (io_stat /= 0) then
+            stop "Could not read input file."
+        end if
+
+        read(11,*) temp, temp, x_0, x_1
+        read(11,*) temp, temp, bigM
+        read(11,*) temp, temp, bigI
+        read(11,*) temp, temp, n_max
+        read(11,*) temp, temp, regions
+
+        write(*,"(A,I3,A,I3,A,I3,A,I3,A,F4.1,A,F4.1)") "Solving for M = ", bigM, " I = ", bigI, " n = ", n_max, &
+            " and ", regions, " regions from x =", x_0, " to x =", x_1, "."
+
+        read(11,*) temp, temp, sigma_t_const
+        read(11,*) temp, temp, sigma_s_const
+        read(11,*) temp, temp, sigma_f_const
+        read(11,*) temp, temp, S_const
+        read(11,*) temp, temp, left_boundary
+        read(11,*) temp, temp, right_boundary
 
         allocate(nu(bigM))
         allocate(w(bigM))
@@ -21,45 +44,45 @@ contains
         allocate(S(bigI))
         allocate(x(bigI + 1))
 
-        nu(1) = -0.960289856497536
-        nu(2) = -0.7966664774136275
-        nu(3) = -0.525532409916329
-        nu(4) = -0.18343464249565
-        nu(5) = -1 * nu(4)
-        nu(6) = -1 * nu(3)
-        nu(7) = -1 * nu(2)
-        nu(8) = -1 * nu(1)
+        read(11,*) temp
+        do i=1,bigM
+            read(11,*) nu(i)
+        end do
+        call print_table("nu", nu, bigM)
 
-        w(1) = 0.10122853629037
-        w(2) = 0.222381034391347
-        w(3) = 0.313706645877676
-        w(4) = 0.362683783378362
-        w(5) = w(4)
-        w(6) = w(3)
-        w(7) = w(2)
-        w(8) = w(1)
+        read(11,*) temp
+        do i=1,bigM
+            read(11,*) w(i)
+        end do
+        call print_table(" w", w, bigM)
 
         do i=1,bigI
-            sigma_t(i) = 1
-            sigma_s(i) = 0.2
-            sigma_f(i) = 0
-            S(i) = 0
+            sigma_t(i) = sigma_t_const
+            sigma_s(i) = sigma_s_const
+            sigma_f(i) = sigma_f_const
+            S(i) = S_const
         end do
 
-        x(1) = 0
-        x(2) = 0.1
-        x(3) = 0.2
-        x(4) = 0.3
-        x(5) = 0.4
-        x(6) = 0.5
-        x(7) = 0.6
-        x(8) = 0.7
-        x(9) = 0.8
-        x(10) = 0.9
-        x(11) = 1
+        x(1) = x_0
+        step = (x_1 - x_0) / bigI
+        do i=2,bigI + 1
+            x(i) = x(i - 1) + step
+        end do
 
         call solve(x, bigI, nu, w, bigM, sigma_t, sigma_s, S, n_max)
     end subroutine project
+
+    subroutine print_table(label, data, data_size)
+        character(2),intent(in)::label
+        real*16,intent(in)::data(*)
+        integer,intent(in)::data_size
+        integer::i
+
+        do i=1,data_size
+            write(*,"(A,I3,A,F19.16)") label // "(", i, ") = ", data(i)
+        end do
+        write(*,"(A)") ""
+    end subroutine print_table
 
     function psi_plus(nu) result(re)
         real*16,intent(in)::nu
@@ -94,7 +117,6 @@ contains
             delta_r(:,:),phi_final(:),phibar_final(:),j_final(:),phibar(:,:),psibar(:,:,:)
 
         n_max_real = (n_max + 1) * 2
-        write(*,"(A,I3)") "n_max_real: ", n_max_real
         allocate(delta_x(bigI))
         allocate(tau(bigM,bigI))
         allocate(alpha(bigM,bigI))
@@ -111,7 +133,6 @@ contains
 
         do i=1,bigI
             delta_x(i) = x(i + 1) - x(i)
-            write(*,*) delta_x(i)
         end do
 
         do m=1,bigM
@@ -129,7 +150,6 @@ contains
             end do
         end do
 
-        write(*,"(A,I3)") n_max_real
         do n=0,n_max
             n_index = get_n(n, n_max)
             do i=1,bigI
