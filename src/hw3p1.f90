@@ -132,8 +132,9 @@ contains
 
         ! Point 11
         call p%eq_P(11, 10)
+        call p%eq_s_s(11, 10)
+        call p%point(11)%calc_x_s_from_s_s()
         call p%point(11)%calc_h_s()
-        call p%point(11)%calc_s_s()
         call p%report_point(11)
 
         ! Point 12
@@ -191,7 +192,7 @@ contains
         Wcbps = vf%times(p%point(14)%pressure%minus(p%point(13)%pressure), btu_lbm)
         call tex_begin()
         write(13,"(A,F8.3,A,F8.3,A,F8.3,A,F8.3,A)") "-\frac{\dot{W}_{cbp,s}}{\dot{m}_{ 1}} = " &
-            // "h_{14,s} - h_{13,s} = v_{@P31}(P_{14} - P_{13}) = ", &
+            // "h_{14,s} - h_{13,s} = v_{@P13}(P_{14} - P_{13}) = ", &
             vf%get_value(), "(", p%point(14)%pressure%get_value(), " - ", p%point(13)%pressure%get_value(), &
             ") = ", Wcbps%get_value(), tex_units(Wcbps)
         call tex_end()
@@ -219,10 +220,10 @@ contains
 
         ! Point 16
         call p%point(16)%given_T(330.0, F)
-        call p%eq_P(16, 8)
-        write(13,"(A)") "Values for superheated steam directly from the steam charts:"
-        call p%point(16)%set_h_s(1197.7, btu_lbm)
-        call p%point(16)%set_s_s(1.6061, btu_lbmR)
+        call p%eq_P(16, 14)
+        write(13,"(A)") "Values for superheated steam at P16:"
+        call p%point(16)%set_h_s(1209.5, btu_lbm)
+        call p%point(16)%set_s_s(2.1328, btu_lbmR)
         call p%report_point(16)
 
         call tex_label("Heat Exchanger 2")
@@ -239,9 +240,8 @@ contains
 
         ! Point 17
         call p%eq_P(17, 4)
-        call p%point(17)%set_x_s(0.0)
-        call p%point(17)%calc_h_s()
-        call p%point(17)%calc_s_s()
+        call p%point(17)%set_h_s(409.79, btu_lbm)
+        call p%point(17)%set_s_s(0.60590, btu_lbmR)
         call p%report_point(17)
 
         ! Point 1
@@ -513,9 +513,11 @@ contains
         temp = temp%minus(m3_m1%minus(m4_m1%minus(m5_m1%minus(m6_m1))))
         Wcps = p%point(12)%enthalpy_s%times(temp, btu_lbm)
         Wcps = Wcps%minus(p%point(11)%enthalpy_s%times(temp, btu_lbm))
+        call Wcps%to_abs()
         call tex_begin()
-        write(13,"(A,F8.3,A)") "-\frac{\dot{W}_{cp ,s}}{m_1} = ", Wcps%get_value(), tex_units(Wcps)
+        write(13,"(A,F8.3,A)") "\frac{\dot{W}_{cp ,s}}{m_1} = ", Wcps%get_value(), tex_units(Wcps)
         call tex_end()
+        write(*,"(A,F8.3)") "Wcps/m1 = ", Wcps%get_value(), tex_units(Wcps)
 
         Wfps_total = Wfps%plus(Wfps)
         Wrcps_total = Wrcps%plus(Wrcps)
@@ -529,7 +531,6 @@ contains
         call tex_end()
 
         call tex_end_document()
-        call p%report_all_solved()
 
         write(*,"(A,F8.3)") "Cycle efficiency: ", eta_s%get_value()
     end subroutine hw3_problem_1

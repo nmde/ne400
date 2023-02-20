@@ -39,7 +39,7 @@ contains
     subroutine to_abs(this)
         class(Quantity),intent(inout)::this
 
-        if (this%value < 1) then
+        if (this%value < 0) then
             this%value = -1 * this%value
         end if
     end subroutine to_abs

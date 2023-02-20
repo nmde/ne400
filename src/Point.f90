@@ -142,7 +142,7 @@ contains
         sfg = sat_p_sfg(this%pressure)
 
         this%quality_s = this%entropy_s%minus(sf)
-        this%quality_s = this%entropy_s%divide(sfg, unitless)
+        this%quality_s = this%quality_s%divide(sfg, unitless)
 
         if (this%quality_s%get_value() > 1 .or. this%quality_s%get_value() < 0) then
             write(*,"(A,I2)") "**** WARNING: Unexpected quality at point ", this%index

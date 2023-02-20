@@ -72,6 +72,35 @@ contains
         call tex_end()
     end subroutine eq_P
 
+    subroutine eq_P_low(this, point2, num_other_points, other_points)
+        class(Problem),intent(inout)::this
+        integer,intent(in)::point2,num_other_points
+        type(Point),intent(in)::other_points(:)
+        type(Quantity)::p1
+        real*8::min
+        integer::i,min_index
+
+        min = other_points(1)%pressure%get_value()
+        min_index = 1
+        do i=2,num_other_points
+            if (other_points(i)%pressure%get_value() < min) then
+                min = other_points(i)%pressure%get_value()
+                min_index = i
+            end if
+        end do
+
+        p1 = this%point(min_index)%pressure
+        this%point(point2)%pressure = Q(p1%get_value(), p1%get_unit())
+
+        if (.not. p1%is_known()) then
+            write(*,"(A,I2,A)") "**** WARNING: Using P ", min_index, " before it is known!"
+        end if
+
+        call tex_begin()
+        write(13,"(A,I2,A,I2,A)") "P_{", point2, "} = P_{", min_index, "}"
+        call tex_end()
+    end subroutine eq_P_low
+
     subroutine eq_h_s(this, point2, point1)
         class(Problem),intent(inout)::this
         integer,intent(in)::point1,point2
