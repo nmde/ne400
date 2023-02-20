@@ -69,7 +69,7 @@ contains
             x(i) = x(i - 1) + step
         end do
 
-        call solve(x, bigI, nu, w, bigM, sigma_t, sigma_s, S, n_max)
+        call solve(x, bigI, nu, w, bigM, sigma_t, sigma_s, S, n_max, left_boundary, right_boundary)
     end subroutine project
 
     subroutine print_table(label, data, data_size)
@@ -84,20 +84,6 @@ contains
         write(*,"(A)") ""
     end subroutine print_table
 
-    function psi_plus(nu) result(re)
-        real*16,intent(in)::nu
-        integer::re
-
-        re = 1
-    end function psi_plus
-
-    function psi_minus(nu) result(re)
-        real*16,intent(in)::nu
-        integer::re
-
-        re = 0
-    end function psi_minus
-
     function get_n(n,n_max) result(n_index)
         integer,intent(in)::n,n_max
         integer::n_index,n_max_real
@@ -107,10 +93,10 @@ contains
         n_index = 1 + n + (n_max_real / 2)
     end function get_n
 
-    subroutine solve(x, bigI, nu, w, bigM, sigma_t, sigma_s, S, n_max)
+    subroutine solve(x, bigI, nu, w, bigM, sigma_t, sigma_s, S, n_max, left_boundary, right_boundary)
         101 FORMAT (A,I3,A,F12.6)
 
-        real*16,intent(in)::x(*),w(*),sigma_t(*),sigma_s(*),S(*),nu(*)
+        real*16,intent(in)::x(*),w(*),sigma_t(*),sigma_s(*),S(*),nu(*),left_boundary,right_boundary
         integer,intent(in)::bigI,bigM,n_max
         integer::i,m,n,n_index,n_max_real
         real*16,allocatable::delta_x(:),tau(:,:),alpha(:,:),S_tot(:,:),psi(:,:,:),phi(:,:),J(:,:), &
@@ -161,7 +147,7 @@ contains
             end do
             do m=1,int(bigM / 2.0)
                 if (n == 0) then
-                    psi(n_index,m,bigI + 1) = psi_minus(nu(m))
+                    psi(n_index,m,bigI + 1) = right_boundary
                 else if (n > 0) then
                     psi(n_index,m,bigI + 1) = 0
                 end if
@@ -172,7 +158,7 @@ contains
             end do
             do m=int(bigM / 2.0) + 1,bigM
                 if (n == 0) then
-                    psi(n_index,m,1) = psi_plus(nu(m))
+                    psi(n_index,m,1) = left_boundary
                 else if (n > 0) then
                     psi(n_index,m,1) = 0
                 end if
