@@ -6,16 +6,17 @@ module ne401project
 contains
     ! Reads user input and passes the input to the solve subroutine
     subroutine project()
-        integer::bigM,bigI,i,n_max,io_stat,regions
+        integer::bigM,bigI,i,n_max,io_stat,regions,current_region
         real*16,allocatable::nu(:),w(:),sigma_t(:),sigma_s(:),sigma_f(:), &
-            S(:),x(:)
-        real*16::sigma_t_const,sigma_s_const,sigma_f_const,S_const,x_0,x_1,step,left_boundary,right_boundary
+            S(:),x(:),region_boundaries(:),sigma_t_regions(:),sigma_s_regions(:),sigma_f_regions(:), &
+            S_regions(:)
+        real*16::x_0,x_1,step,left_boundary,right_boundary
         character(64)::input_file
         character(1)::temp
 
         !write(*,"(A)",advance="no") "Path to input file: "
         !read(*,*) input_file
-        input_file = "C:\Users\dmnev\Documents\nmde\thermo\input\test1.txt" ! TODO - remove this
+        input_file = "C:\Users\dmnev\Documents\nmde\thermo\input\test1-input.txt" ! TODO - remove this
         open(unit=11,file=input_file,action="read",iostat=io_stat)
         if (io_stat /= 0) then
             stop "Could not read input file."
@@ -27,16 +28,6 @@ contains
         read(11,*) temp, temp, n_max
         read(11,*) temp, temp, regions
 
-        write(*,"(A,I3,A,I3,A,I3,A,I3,A,F4.1,A,F4.1)") "Solving for M = ", bigM, " I = ", bigI, " n = ", n_max, &
-            " and ", regions, " regions from x =", x_0, " to x =", x_1
-
-        read(11,*) temp, temp, sigma_t_const
-        read(11,*) temp, temp, sigma_s_const
-        read(11,*) temp, temp, sigma_f_const
-        read(11,*) temp, temp, S_const
-        read(11,*) temp, temp, left_boundary
-        read(11,*) temp, temp, right_boundary
-
         allocate(nu(bigM))
         allocate(w(bigM))
         allocate(sigma_t(bigI))
@@ -44,6 +35,42 @@ contains
         allocate(sigma_f(bigI))
         allocate(S(bigI))
         allocate(x(bigI + 1))
+        allocate(region_boundaries(regions))
+        allocate(sigma_t_regions(regions))
+        allocate(sigma_s_regions(regions))
+        allocate(sigma_f_regions(regions))
+        allocate(S_regions(regions))
+
+        write(*,"(A,I3,A,I3,A,I3,A,I3,A,F4.1,A,F4.1)") "Solving for M = ", bigM, " I = ", bigI, " n = ", n_max, &
+            " and ", regions, " regions from x =", x_0, " to x =", x_1
+
+        read (11,*) temp
+        do i=1,regions
+            read(11,*) region_boundaries(i)
+        end do
+
+        read (11,*) temp
+        do i=1,regions
+            read(11,*) sigma_t_regions(i)
+        end do
+
+        read(11,*) temp
+        do i=1,regions
+            read(11,*) sigma_s_regions(i)
+        end do
+
+        read(11,*) temp
+        do i=1,regions
+            read(11,*) sigma_f_regions(i)
+        end do
+
+        read(11,*) temp
+        do i=1,regions
+            read(11,*) S_regions(i)
+        end do
+
+        read(11,*) temp, temp, left_boundary
+        read(11,*) temp, temp, right_boundary
 
         read(11,*) temp
         do i=1,bigM
@@ -55,17 +82,21 @@ contains
             read(11,*) w(i)
         end do
 
-        do i=1,bigI
-            sigma_t(i) = sigma_t_const
-            sigma_s(i) = sigma_s_const
-            sigma_f(i) = sigma_f_const
-            S(i) = S_const
-        end do
-
         x(1) = x_0
         step = (x_1 - x_0) / bigI
         do i=2,bigI + 1
             x(i) = x(i - 1) + step
+        end do
+
+        current_region = 1
+        do i=1,bigI
+            if (x(i) > region_boundaries(current_region)) then
+                current_region = current_region + 1
+            end if
+            sigma_t(i) = sigma_t_regions(current_region)
+            sigma_s(i) = sigma_s_regions(current_region)
+            sigma_f(i) = sigma_f_regions(current_region)
+            S(i) = S_regions(current_region)
         end do
 
         call solve(x, bigI, nu, w, bigM, sigma_t, sigma_s, S, n_max, left_boundary, right_boundary)
@@ -181,15 +212,15 @@ contains
             end do
         end do
 
-        call print_output(x, bigI, sigma_t, sigma_s, S, n_max, phi, phibar, J, delta_r, delta_x)
+        call print_output(x, bigI, sigma_t, sigma_s, S, n_max, phi, phibar, J, delta_r, delta_x, nu, bigM, psi)
     end subroutine solve
 
-    ! Prints the output file
-    subroutine print_output(x, bigI, sigma_t, sigma_s, S, n_max, phi, phibar, J, delta_r, delta_x)
-        real*16,intent(in)::x(*),phi(:,:),phibar(:,:),J(:,:),delta_r(:,:),delta_x(*),sigma_t(*),sigma_s(*),S(*)
-        integer,intent(in)::bigI,n_max
-        real*16,allocatable::phi_final(:),phibar_final(:),J_final(:),delta_r_final(:)
-        integer::i,n,io_stat
+    ! Prints the output files
+    subroutine print_output(x, bigI, sigma_t, sigma_s, S, n_max, phi, phibar, J, delta_r, delta_x, nu, bigM, psi)
+        real*16,intent(in)::x(*),phi(:,:),phibar(:,:),J(:,:),delta_r(:,:),delta_x(*),sigma_t(*),sigma_s(*),S(*),nu(*),psi(:,:,:)
+        integer,intent(in)::bigI,n_max,bigM
+        real*16,allocatable::phi_final(:),phibar_final(:),J_final(:),delta_r_final(:),psi_final(:,:)
+        integer::i,n,io_stat,m
         character(24)::separator
         real*16::sigma_a
 
@@ -199,6 +230,7 @@ contains
         allocate(phibar_final(bigI))
         allocate(J_final(bigI))
         allocate(delta_r_final(bigI))
+        allocate(psi_final(bigM,bigI))
 
         open(unit=14,file="./tables.txt",action="write",iostat=io_stat)
         if (io_stat /= 0) then
@@ -234,11 +266,11 @@ contains
             stop "Could not open output file."
         end if
 
-        write(12,"(A)") "  n,  i,    x,    ϕ^(n),      δr^(n),    J^(n)"
+        write(12,"(A)") "  n,  i,    x,    ϕ^(n),      δr^(n),    J^(n), ϕavg^(n)"
         do n=0,n_max
             do i=1,bigI
-                write(12,"(I3,A,I3,A,F4.2,A,F8.5,A,E11.5,A,F8.5)") n, ",", i, ", ", x(i), ", ", phi(n + 1, i), ", ", &
-                    delta_r(n + 1, i), ", ", J(n + 1, i)
+                write(12,"(I3,A,I3,A,F4.2,A,F8.5,A,E11.5,A,F8.5,A,F8.5)") n, ",", i, ", ", x(i), ", ", phi(n + 1, i), ", ", &
+                    delta_r(n + 1, i), ", ", J(n + 1, i), ", ", phibar(n + 1, i)
             end do
         end do
 
@@ -247,7 +279,7 @@ contains
             stop "Could not open output file."
         end if
 
-        write(13,"(A)") "   x,   Φ^(N)"
+        write(13,"(A)") "   x,   Φ^(N), Φavg^(N),       F^(n)"
         do i=1,bigI
             phi_final(i) = 0
             J_final(i) = 0
@@ -257,7 +289,7 @@ contains
                 J_final(i) = J_final(i) + J(n + 1, i)
                 phibar_final(i) = phibar_final(i) + phibar(n + 1, i)
             end do
-            write(13,"(F4.2,A,F8.5)") x(i), ",", phi_final(i)
+            write(13,"(F4.2,A,F8.5,A,F8.3,A,E11.5)") x(i), ",", phi_final(i), ", ", phibar_final(i), ", ", J_final(i)
         end do
 
         open(unit=15,file="./graphs_3.csv",action="write",iostat=io_stat)
@@ -274,6 +306,22 @@ contains
                     (delta_x(i) * ((sigma_a * phibar_final(i)) - S(i)))
             end do
             write(15,"(I3,A,E11.5)") i, ", ", delta_r_final(i)
+        end do
+
+        open(unit=17,file="./graphs_4.csv",action="write",iostat=io_stat)
+        if (io_stat /= 0) then
+            stop "Could not open output file."
+        end if
+
+        write(17,"(A)") "x,              µ, Ψm^(10)"
+        do i=1,bigI
+            do m=1,bigM
+                psi_final(m,i) = 0
+                do n=1,n_max
+                    psi_final(m,i) = psi_final(m,i) + psi(n,m,i)
+                end do
+                write(17,"(F4.2,A,E11.5,A,F8.5)") x(i), ", ", nu(m), ",", psi_final(m,i)
+            end do
         end do
     end subroutine print_output
 end module ne401project
