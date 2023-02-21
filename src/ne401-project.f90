@@ -1,4 +1,10 @@
-module ne401project
+program ne401project
+    use module_ne401project
+
+    call project()
+end program ne401project
+
+module module_ne401project
     implicit none
     private
 
@@ -14,9 +20,8 @@ contains
         character(64)::input_file
         character(1)::temp
 
-        !write(*,"(A)",advance="no") "Path to input file: "
-        !read(*,*) input_file
-        input_file = "C:\Users\dmnev\Documents\nmde\thermo\input\test1-input.txt" ! TODO - remove this
+        write(*,"(A)",advance="no") "Path to input file: "
+        read(*,*) input_file
         open(unit=11,file=input_file,action="read",iostat=io_stat)
         if (io_stat /= 0) then
             stop "Could not read input file."
@@ -324,4 +329,4 @@ contains
             end do
         end do
     end subroutine print_output
-end module ne401project
+end module module_ne401project
