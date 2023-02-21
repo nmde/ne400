@@ -10,7 +10,7 @@ contains
         real*16,allocatable::nu(:),w(:),sigma_t(:),sigma_s(:),sigma_f(:), &
             S(:),x(:)
         real*16::sigma_t_const,sigma_s_const,sigma_f_const,S_const,x_0,x_1,step,left_boundary,right_boundary
-        character(64)::input_file,output_file
+        character(64)::input_file
         character(1)::temp
 
         !write(*,"(A)",advance="no") "Path to input file: "
@@ -21,14 +21,6 @@ contains
             stop "Could not read input file."
         end if
 
-        !write(*,"(A)",advance="no") "Path to output file: "
-        !read(*,*) output_file
-        output_file = "C:\Users\dmnev\Documents\nmde\thermo\output\test1.txt" ! TODO - remove this
-        open(unit=12,file=output_file,action="write",iostat=io_stat)
-        if (io_stat /= 0) then
-            stop "Could not open output file."
-        end if
-
         read(11,*) temp, temp, x_0, x_1
         read(11,*) temp, temp, bigM
         read(11,*) temp, temp, bigI
@@ -36,7 +28,7 @@ contains
         read(11,*) temp, temp, regions
 
         write(*,"(A,I3,A,I3,A,I3,A,I3,A,F4.1,A,F4.1)") "Solving for M = ", bigM, " I = ", bigI, " n = ", n_max, &
-            " and ", regions, " regions from x =", x_0, " to x =", x_1, "."
+            " and ", regions, " regions from x =", x_0, " to x =", x_1
 
         read(11,*) temp, temp, sigma_t_const
         read(11,*) temp, temp, sigma_s_const
@@ -91,33 +83,6 @@ contains
         end do
         write(*,"(A)") ""
     end subroutine print_table
-
-    ! Prints the output file
-    subroutine print_output(phi, phibar, J, delta_r, bigI, n_max)
-        101 FORMAT (A,I3,A,F12.6)
-
-        real*16,intent(in)::phi(:,:),phibar(:,:),J(:,:),delta_r(:,:)
-        integer,intent(in)::bigI,n_max
-        real*16,allocatable::phi_final(:),phibar_final(:),J_final(:)
-        integer::i,n
-        character(24)::separator
-
-        separator = "========================"
-
-        allocate(phi_final(bigI))
-        allocate(phibar_final(bigI))
-        allocate(J_final(bigI))
-
-        do n=0,n_max
-            write(12,"(A,I3)") "n = ", n
-            write(12,"(A)") separator
-            write(12,"(A,I3,A,I3,A)") "  i  ϕ^(", n, ")     δr^(", n, ")"
-            do i=1,bigI
-                write(12,"(I3,A,F8.5,A,E11.5)") i, " ", phi(n + 1, i), "  ", delta_r(n + 1, i)
-            end do
-            write(12,"(A)") ""
-        end do
-    end subroutine print_output
 
     ! Applies the alogirhtm to solve the NTE.
     subroutine solve(x, bigI, nu, w, bigM, sigma_t, sigma_s, S, n_max, left_boundary, right_boundary)
@@ -216,6 +181,99 @@ contains
             end do
         end do
 
-        call print_output(phi, phibar, J ,delta_r, bigI, n_max)
+        call print_output(x, bigI, sigma_t, sigma_s, S, n_max, phi, phibar, J, delta_r, delta_x)
     end subroutine solve
+
+    ! Prints the output file
+    subroutine print_output(x, bigI, sigma_t, sigma_s, S, n_max, phi, phibar, J, delta_r, delta_x)
+        real*16,intent(in)::x(*),phi(:,:),phibar(:,:),J(:,:),delta_r(:,:),delta_x(*),sigma_t(*),sigma_s(*),S(*)
+        integer,intent(in)::bigI,n_max
+        real*16,allocatable::phi_final(:),phibar_final(:),J_final(:),delta_r_final(:)
+        integer::i,n,io_stat
+        character(24)::separator
+        real*16::sigma_a
+
+        separator = "========================"
+
+        allocate(phi_final(bigI))
+        allocate(phibar_final(bigI))
+        allocate(J_final(bigI))
+        allocate(delta_r_final(bigI))
+
+        open(unit=14,file="./tables.txt",action="write",iostat=io_stat)
+        if (io_stat /= 0) then
+            stop "Could not open output file."
+        end if
+
+        open(unit=16,file="./tables.tex",action="write",iostat=io_stat)
+        if (io_stat /= 0) then
+            stop "Could not open output file."
+        end if
+
+        do n=0,n_max
+            write(14,"(A,I3)") "n = ", n
+            write(14,"(A)") separator
+            write(14,"(A,I3,A,I3,A)") "  i  ϕ^(", n, ")     δr^(", n, ")"
+            write(16,"(A)") "\begin{table}[H]"
+            write(16,"(A)") "\centering"
+            write(16,"(A)") "\begin{tabular}{c|c|c}"
+            write(16,"(A,I3,A,I3,A)") "i & \phi^{(", n, ")} & \delta r^{(", n, ")} \\"
+            do i=1,bigI
+                write(14,"(I3,A,F8.5,A,E11.5)") i, " ", phi(n + 1, i), "  ", delta_r(n + 1, i)
+                write(16,"(I3,A,F8.5,A,E11.5,A)") i, " & ", phi(n + 1, i), " & ", delta_r(n + 1, i), " \\"
+            end do
+            write(14,"(A)") ""
+            write(16,"(A)") "\end{tabular}"
+            write(16,"(A,I3,A)") "\caption{n = ", n, "}"
+            write(16,"(A)") "\end{table}"
+            write(16,"(A)") ""
+        end do
+
+        open(unit=12,file="./graphs_1.csv",action="write",iostat=io_stat)
+        if (io_stat /= 0) then
+            stop "Could not open output file."
+        end if
+
+        write(12,"(A)") "  n,  i,    x,    ϕ^(n),      δr^(n),    J^(n)"
+        do n=0,n_max
+            do i=1,bigI
+                write(12,"(I3,A,I3,A,F4.2,A,F8.5,A,E11.5,A,F8.5)") n, ",", i, ", ", x(i), ", ", phi(n + 1, i), ", ", &
+                    delta_r(n + 1, i), ", ", J(n + 1, i)
+            end do
+        end do
+
+        open(unit=13,file="./graphs_2.csv",action="write",iostat=io_stat)
+        if (io_stat /= 0) then
+            stop "Could not open output file."
+        end if
+
+        write(13,"(A)") "   x,   Φ^(N)"
+        do i=1,bigI
+            phi_final(i) = 0
+            J_final(i) = 0
+            phibar_final(i) = 0
+            do n=0,n_max
+                phi_final(i) = phi_final(i) + phi(n + 1, i)
+                J_final(i) = J_final(i) + J(n + 1, i)
+                phibar_final(i) = phibar_final(i) + phibar(n + 1, i)
+            end do
+            write(13,"(F4.2,A,F8.5)") x(i), ",", phi_final(i)
+        end do
+
+        open(unit=15,file="./graphs_3.csv",action="write",iostat=io_stat)
+        if (io_stat /= 0) then
+            stop "Could not open output file."
+        end if
+
+        write(15,"(A)") "  i,         δR*"
+        do i=1,bigI - 1
+            delta_r_final(i) = 0
+            do n=0,n_max
+                sigma_a = sigma_t(i) - sigma_s(i)
+                delta_r_final(i) = delta_r_final(i) + J_final(i + 1) - J_final(i) + &
+                    (delta_x(i) * ((sigma_a * phibar_final(i)) - S(i)))
+            end do
+            write(15,"(I3,A,E11.5)") i, ", ", delta_r_final(i)
+        end do
+    end subroutine print_output
 end module ne401project
