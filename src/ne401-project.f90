@@ -54,7 +54,7 @@ contains
         do i=1,bigM
             read(11,*) w(i)
         end do
-        call print_table(" w", w, bigM)
+        call print_table("w", w, bigM)
 
         do i=1,bigI
             sigma_t(i) = sigma_t_const
@@ -73,7 +73,7 @@ contains
     end subroutine project
 
     subroutine print_table(label, data, data_size)
-        character(2),intent(in)::label
+        character(*),intent(in)::label
         real*16,intent(in)::data(*)
         integer,intent(in)::data_size
         integer::i
@@ -84,35 +84,25 @@ contains
         write(*,"(A)") ""
     end subroutine print_table
 
-    function get_n(n,n_max) result(n_index)
-        integer,intent(in)::n,n_max
-        integer::n_index,n_max_real
-
-        n_max_real = (n_max) * 2
-
-        n_index = 1 + n + (n_max_real / 2)
-    end function get_n
-
     subroutine solve(x, bigI, nu, w, bigM, sigma_t, sigma_s, S, n_max, left_boundary, right_boundary)
         101 FORMAT (A,I3,A,F12.6)
 
         real*16,intent(in)::x(*),w(*),sigma_t(*),sigma_s(*),S(*),nu(*),left_boundary,right_boundary
         integer,intent(in)::bigI,bigM,n_max
-        integer::i,m,n,n_index,n_max_real
+        integer::i,m,n_real,n
         real*16,allocatable::delta_x(:),tau(:,:),alpha(:,:),S_tot(:,:),psi(:,:,:),phi(:,:),J(:,:), &
             delta_r(:,:),phi_final(:),phibar_final(:),j_final(:),phibar(:,:),psibar(:,:,:)
 
-        n_max_real = (n_max + 1) * 2
         allocate(delta_x(bigI))
         allocate(tau(bigM,bigI))
         allocate(alpha(bigM,bigI))
-        allocate(S_tot(n_max_real + 1, bigI))
-        allocate(psi(n_max_real + 1,bigM,bigI + 1))
-        allocate(psibar(n_max_real + 1,bigM,bigI + 1))
-        allocate(phi(n_max_real + 1,bigI + 1))
-        allocate(phibar(n_max_real + 1,bigI + 1))
-        allocate(J(n_max_real + 1,bigI + 1))
-        allocate(delta_r(n_max_real + 1,bigI))
+        allocate(S_tot(n_max + 1, bigI))
+        allocate(psi(n_max + 1,bigM,bigI + 1))
+        allocate(psibar(n_max + 1,bigM,bigI + 1))
+        allocate(phi(n_max + 1,bigI + 1))
+        allocate(phibar(n_max + 1,bigI + 1))
+        allocate(J(n_max + 1,bigI + 1))
+        allocate(delta_r(n_max + 1,bigI))
         allocate(phi_final(bigI))
         allocate(phibar_final(bigI))
         allocate(j_final(bigI))
@@ -120,6 +110,7 @@ contains
         do i=1,bigI
             delta_x(i) = x(i + 1) - x(i)
         end do
+        call print_table("dX", delta_x, bigI)
 
         do m=1,bigM
             do i=1,bigI
@@ -131,66 +122,67 @@ contains
                         alpha(m,i) = (1 / tau(m,i)) + (1 / (1 - exp(tau(m,i))))
                     end if
                 else
-                    alpha(m,i) = 0.5 - (tau(m,i) / REAL(12))
+                    alpha(m,i) = 0.5 - (tau(m,i) / 12.0)
                 end if
+                write(*,"(A,I3,A,I3,A,F19.16)") "tau(", m, ",", i, ") = ", tau(m,i)
+                write(*,"(A,I3,A,I3,A,F19.16)") "alpha(", m, ",", i, ") = ", alpha(m,i)
             end do
         end do
 
-        do n=0,n_max
-            n_index = get_n(n, n_max)
+        do n_real=0,n_max
+            n = n_real + 1 ! Because FORTRAN arrays start at 1, when n_real = 0, n must be 1
             do i=1,bigI
-                if (n == 0) then
-                    S_tot(n_index,i) = 0.5 * S(i)
+                if (n == 1) then ! Adjusted for FORTRAN array indices
+                    S_tot(n,i) = 0.5 * S(i)
                 else
-                    S_tot(n_index,i) = 0.5 * sigma_s(i) * phi(get_n(-(n - 1), n_max), i) ! ??
+                    S_tot(n,i) = 0.5 * sigma_s(i) * phibar(n - 1, i)
                 end if
+                write(*,"(A,I3,A,I3,A,F19.16)") "S_tot(", n, ",", i, ") = ", S_tot(n,i)
             end do
-            do m=1,int(bigM / 2.0)
-                if (n == 0) then
-                    psi(n_index,m,bigI + 1) = right_boundary
+            do m=1,bigM / 2
+                if (n == 1) then ! Adjusted for FORTRAN array indices
+                    psi(n,m,bigI + 1) = left_boundary
                 else if (n > 0) then
-                    psi(n_index,m,bigI + 1) = 0
+                    psi(n,m,bigI + 1) = 0
                 end if
-                do i=1,bigI
-                    psi(n_index,m,i) = psi(n_index,m,i + 1) * exp(tau(m,i)) + &
-                        (S_tot(n_index,i) / (sigma_t(i) + 10E-25)) * (1 - exp(tau(m,i)))
+                do i=bigI,1,-1
+                    psi(n,m,i) = (psi(n,m,i + 1) * exp(tau(m,i))) + &
+                        ((S_tot(n,i) / (sigma_t(i) + 10E-25)) * (1 - exp(tau(m,i))))
                 end do
             end do
-            do m=int(bigM / 2.0) + 1,bigM
-                if (n == 0) then
-                    psi(n_index,m,1) = left_boundary
+            do m=(bigM / 2) + 1,bigM
+                if (n == 1) then ! Adjusted for FORTRAN array indices
+                    psi(n,m,1) = right_boundary
                 else if (n > 0) then
-                    psi(n_index,m,1) = 0
+                    psi(n,m,1) = 0
                 end if
                 do i=1,bigI
-                    psi(n_index,m,i + 1) = psi(n_index,m,i) * exp(-1 * tau(m,i)) + &
-                        (S_tot(n_index,i) / (sigma_t(i) + 10E-25)) * (1 - exp(-1 * tau(m,i)))
+                    psi(n,m,i + 1) = (psi(n,m,i) * exp(-1 * tau(m,i))) + &
+                        ((S_tot(n,i) / (sigma_t(i) + 10E-25)) * (1 - exp(-1 * tau(m,i))))
                 end do
             end do
             do m=1,bigM
                 do i=1,bigI
-                    psibar(get_n(-1 * n, n_max),m,i) = (alpha(m,i) * psi(n_index,m,i)) + &
-                        ((1 - alpha(m,i)) * psi(n_index,m,i + 1))
+                    psibar(n,m,i) = (alpha(m,i) * psi(n,m,i)) + ((1 - alpha(m,i)) * psi(n,m,i + 1))
                 end do
             end do
             do i=1,bigI + 1
-                phi(n_index,i) = 0
-                J(n_index,i) = 0
+                phi(n,i) = 0
+                J(n,i) = 0
                 do m=1,bigM
-                    phi(n_index,i) = phi(n_index,i) + (psi(n_index,m,i) * w(m))
-                    J(n_index,i) = J(n_index,i) + (nu(m) * psi(n_index,m,i) * w(m))
+                    phi(n,i) = phi(n,i) + (psi(n,m,i) * w(m))
+                    J(n,i) = J(n,i) + (nu(m) * psi(n,m,i) * w(m))
                 end do
             end do
             do i=1,bigI
-                phibar(get_n(-1 * n, n_max),i) = 0
+                phibar(n,i) = 0
                 do m=1,bigM
-                    phibar(get_n(-1 * n, n_max),i) = phibar(get_n(-1 * n, n_max),i) + &
-                        (psibar(get_n(-1 * n, n_max),m,i) * w(m))
+                    phibar(n,i) = phibar(n,i) + (psibar(n,m,i) * w(m))
                 end do
             end do
             do i=1,bigI
-                delta_r(n_index,i) = J(n_index,i+1) - J(n_index,i) + (delta_x(i) * &
-                    ((sigma_t(i) * phibar(get_n(-1 * n, n_max), i)) - (2 * S_tot(n_index,i))))
+                delta_r(n,i) = J(n,i + 1) - J(n, i) + (delta_x(i) * &
+                    ((sigma_t(i) * phibar(n,i)) - (2 * S_tot(n,i))))
             end do
         end do
 
@@ -199,9 +191,9 @@ contains
             phibar_final(i) = 0
             j_final(i) = 0
             do n=0,n_max
-                phi_final(i) = phi_final(i) + phi(get_n(n,n_max),i)
-                phibar_final(i) = phibar_final(i) + phibar(get_n(n,n_max),i)
-                j_final(i) = j_final(i) + J(get_n(n,n_max),i)
+                phi_final(i) = phi_final(i) + phi(n + 1,i)
+                phibar_final(i) = phibar_final(i) + phibar(n + 1,i)
+                j_final(i) = j_final(i) + J(n + 1,i)
             end do
             write(*,101) "phi*_", i, " = ", phi_final(i)
             write(*,101) "phibar*_", i, " = ", phi_final(i)

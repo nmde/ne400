@@ -39,9 +39,7 @@ contains
     subroutine to_abs(this)
         class(Quantity),intent(inout)::this
 
-        if (this%value < 0) then
-            this%value = -1 * this%value
-        end if
+        this%value = abs(this%value)
     end subroutine to_abs
 
     function get_unit(this) result(unit)
