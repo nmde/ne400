@@ -1,3 +1,5 @@
+! NE 401 Computational Project
+! Daniel Nevius, February 20th 2023
 program ne401project
     use module_ne401project
 
