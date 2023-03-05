@@ -2,3 +2,4 @@ build
 *.mod
 *.smod
 *.~lock.*
+node_modules
