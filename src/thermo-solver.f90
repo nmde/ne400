@@ -1,5 +1,5 @@
 module thermo_solver
-  use ne401project
+  use lab2
 
   implicit none
   private
@@ -7,6 +7,6 @@ module thermo_solver
   public::solve
 contains
   subroutine solve
-    call project()
+    call lab_2()
   end subroutine solve
 end module thermo_solver

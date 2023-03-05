@@ -1,5 +1,4 @@
 module lab2
-    use stdlib_string_type, only: string_type
     use class_Quantity
 
     implicit none
@@ -83,6 +82,7 @@ contains
         Qth = mdot%times(Cp, btu_sF)
         minus_one = Q(-1D0, unitless)
         Qtc = minus_one%times(mdot%times(Cp, btu_sF), btu_sF)
+        write(*,"(A,F8.3)") "Mdot = ", mdot%get_value()
         write(*,"(A,F8.3)") "Qth = ", Qth%get_value()
         write(*,"(A,F8.3)") "Qtc = ", Qtc%get_value()
 
