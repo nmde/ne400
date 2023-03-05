@@ -27,98 +27,102 @@ function average(list: number[]): number {
 }
 
 function inhour(DT: number): number {
-  const stable_period = DT / Math.log(2);
-  return (
-    (lambda_eff * l + beta_eff + l) /
-    (lambda_eff * stable_period + stable_period + 1)
-  );
+  const period = DT / Math.log(2);
+  return (lambda_eff * l + beta_eff + l) / (lambda_eff * period + period + 1);
 }
 
 const lambda_eff = sum(lambda);
-console.log(`Lambad effective: ${lambda_eff}`);
 const beta_eff = sum(beta);
-console.log(`Beta effective: ${beta_eff}`);
 
-async function main() {
-  const rows = (
-    await fs.readFile(path.resolve(__dirname, '..', 'input', 'lab3_s1_40s.csv'))
+class DataRow {
+  public time: number;
+  public power: number;
+  public DT!: number;
+  public power_coefficient!: number;
+  public power_defect!: number;
+
+  public constructor(time: number, power: number) {
+    this.time = time;
+    this.power = power;
+  }
+
+  public get reactivity(): number {
+    return inhour(this.DT);
+  }
+}
+
+async function main(experiment: string) {
+  const input = (
+    await fs.readFile(
+      path.resolve(__dirname, '..', 'input', `lab3_s1_${experiment}.csv`)
+    )
   )
     .toString()
     .split('\n');
-  const cicLinear: number[] = [];
-  const cicLog: number[] = [];
-  const corrected: number[] = [];
-  const reactivities: number[] = [];
-  const powers: number[] = [];
-  let lastPower = Number(rows[1][6]);
-  let lastPowerTime: number | null;
-  let doublingTimes: number[] = [];
-  let outputCsv = 'Linear Power,Log Power,Corrected Power\n';
-  let reactivityCsv = `Power,Reactivity,Power Coefficient,Power Defect\n`;
-
-  const processRow = (power: number, time: number) => {
-    const DT = time - (lastPowerTime as number);
-    corrected.push(power);
-    if (power >= lastPower * 2) {
-      doublingTimes.push(DT);
-      lastPower = power;
-      powers.push(power);
-      lastPowerTime = time;
-      reactivities.push(inhour(DT));
-      let power_coefficient = 0;
-      let power_defect = 0;
-      if (reactivities.length > 1) {
-        const delta_rho =
-          reactivities[reactivities.length - 1] -
-          reactivities[reactivities.length - 2];
-        const delta_P = powers[powers.length - 1] - powers[powers.length - 2];
-        power_coefficient = delta_rho / delta_P;
-        power_defect = power_coefficient * delta_P;
-      }
-      reactivityCsv += `${lastPower},${
-        reactivities[reactivities.length - 1]
-      },${power_coefficient},${power_defect}\n`;
-    }
-  };
-
-  for (let i = 1; i < rows.length; i += 1) {
-    const row = rows[i].split(',');
-    const time = timestampToSeconds(row[0]);
-    if (i == 1) {
-      lastPowerTime = time;
-    }
-    const linear = Number(row[3]);
-    const log = Number(row[6]);
-    cicLinear.push(linear);
-    cicLog.push(log);
-    if (i < 368) {
-      processRow(log, time);
+  let outputCsv =
+    'Time,Corrected Power,Doubling Time,Reactivity,Power Coefficient,Power Defect\n';
+  const rows: DataRow[] = [];
+  for (let i = 1; i < input.length - 1; i += 1) {
+    const data = input[i].split(',');
+    const time = timestampToSeconds(data[0]);
+    let row: DataRow;
+    if (
+      (i < 368 && experiment === '40s') ||
+      (i < 115 && experiment === '15s')
+    ) {
+      row = new DataRow(time, Number(data[6]));
     } else {
-      processRow(linear, time);
+      row = new DataRow(time, Number(data[3]));
     }
-    outputCsv += `${linear},${log},${corrected[i - 1]}\n`;
+    rows.push(row);
   }
-  const DT = average(doublingTimes);
-  // Should doubling time be the average? Or the mode? Or something else?
+  for (let i = 0; i < rows.length; i += 1) {
+    let found = false;
+    let j = 0;
+    while (!found && j < rows.length) {
+      if (rows[j].power > rows[i].power / 2) {
+        found = true;
+      } else {
+        j += 1;
+      }
+    }
+    if (found) {
+      rows[i].DT = rows[i].time - rows[j].time;
+      console.log(`${rows[i].time} - ${rows[j].time}`);
+      if (i > 0) {
+        const delta_rho = rows[i].reactivity - rows[i - 1].reactivity;
+        const delta_P = rows[i].power - rows[i - 1].power;
+        if (rows[i].power === rows[i - 1].power) {
+          rows[i].power_coefficient = rows[i - 1].power_coefficient;
+          rows[i].power_defect = rows[i - 1].power_defect;
+        } else {
+          rows[i].power_coefficient = delta_rho / delta_P;
+          rows[i].power_defect = rows[i].power_coefficient * delta_P;
+        }
+      }
+    } else {
+      console.warn(`Could not calculate for power ${rows[i].power}!`);
+    }
+    outputCsv += `${rows[i].time},${rows[i].power},${rows[i].DT},${rows[i].reactivity},${rows[i].power_coefficient},${rows[i].power_defect}\n`;
+  }
+  const DT = average(rows.map((row) => row.DT));
   console.log(`DT = ${DT}`);
   const stable_period = DT / Math.log(2);
   console.log(`Stable period = ${stable_period}`);
   const reactivity = inhour(DT);
   console.log(`Reactivity: ${reactivity}`);
-  // Is this a good estimate?
   const power_coefficient_total =
-    (reactivities[reactivities.length - 1] - reactivities[0]) /
-    (powers[powers.length - 1] - powers[0]);
+    (rows[rows.length - 1].reactivity - rows[0].reactivity) /
+    (rows[rows.length - 1].power - rows[0].power);
   console.log(`Estimated total power coefficient: ${power_coefficient_total}`);
-  const power_defect_total = power_coefficient_total * (powers[powers.length - 1] - powers[0]);
+  const power_defect_total =
+    power_coefficient_total * (rows[rows.length - 1].power - rows[0].power);
   console.log(`Estimated total power defect: ${power_defect_total}`);
   await fs.writeFile(
-    path.resolve(__dirname, '..', 'output', 'lab3_s1_40s.csv'),
+    path.resolve(__dirname, '..', 'output', `lab3_s1_${experiment}.csv`),
     outputCsv
   );
-  await fs.writeFile(
-    path.resolve(__dirname, '..', 'output', 'lab3_s1_40s_reactivity.csv'),
-    reactivityCsv
-  );
 }
-main();
+
+main('15s');
+main('40s');
