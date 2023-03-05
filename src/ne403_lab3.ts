@@ -41,7 +41,7 @@ console.log(`Beta effective: ${beta_eff}`);
 
 async function main() {
   const rows = (
-    await fs.readFile(path.resolve(__dirname, '..', 'input', 'lab3_s1_15s.csv'))
+    await fs.readFile(path.resolve(__dirname, '..', 'input', 'lab3_s1_40s.csv'))
   )
     .toString()
     .split('\n');
@@ -91,7 +91,7 @@ async function main() {
     const log = Number(row[6]);
     cicLinear.push(linear);
     cicLog.push(log);
-    if (i < 115) {
+    if (i < 368) {
       processRow(log, time);
     } else {
       processRow(linear, time);
@@ -113,11 +113,11 @@ async function main() {
   const power_defect_total = power_coefficient_total * (powers[powers.length - 1] - powers[0]);
   console.log(`Estimated total power defect: ${power_defect_total}`);
   await fs.writeFile(
-    path.resolve(__dirname, '..', 'output', 'lab3_s1_15s.csv'),
+    path.resolve(__dirname, '..', 'output', 'lab3_s1_40s.csv'),
     outputCsv
   );
   await fs.writeFile(
-    path.resolve(__dirname, '..', 'output', 'lab3_s1_15s_reactivity.csv'),
+    path.resolve(__dirname, '..', 'output', 'lab3_s1_40s_reactivity.csv'),
     reactivityCsv
   );
 }
