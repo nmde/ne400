@@ -48,11 +48,39 @@ async function main() {
   const cicLinear: number[] = [];
   const cicLog: number[] = [];
   const corrected: number[] = [];
+  const reactivities: number[] = [];
+  const powers: number[] = [];
   let lastPower = Number(rows[1][6]);
-  let lastPowerTime;
+  let lastPowerTime: number | null;
   let doublingTimes: number[] = [];
   let outputCsv = 'Linear Power,Log Power,Corrected Power\n';
-  let reactivityCsv = `Power,Reactivity\n`;
+  let reactivityCsv = `Power,Reactivity,Power Coefficient,Power Defect\n`;
+
+  const processRow = (power: number, time: number) => {
+    const DT = time - (lastPowerTime as number);
+    corrected.push(power);
+    if (power >= lastPower * 2) {
+      doublingTimes.push(DT);
+      lastPower = power;
+      powers.push(power);
+      lastPowerTime = time;
+      reactivities.push(inhour(DT));
+      let power_coefficient = 0;
+      let power_defect = 0;
+      if (reactivities.length > 1) {
+        const delta_rho =
+          reactivities[reactivities.length - 1] -
+          reactivities[reactivities.length - 2];
+        const delta_P = powers[powers.length - 1] - powers[powers.length - 2];
+        power_coefficient = delta_rho / delta_P;
+        power_defect = power_coefficient * delta_P;
+      }
+      reactivityCsv += `${lastPower},${
+        reactivities[reactivities.length - 1]
+      },${power_coefficient},${power_defect}\n`;
+    }
+  };
+
   for (let i = 1; i < rows.length; i += 1) {
     const row = rows[i].split(',');
     const time = timestampToSeconds(row[0]);
@@ -63,23 +91,10 @@ async function main() {
     const log = Number(row[6]);
     cicLinear.push(linear);
     cicLog.push(log);
-    const DT = time - (lastPowerTime as number);
     if (i < 115) {
-      corrected.push(log);
-      if (log >= lastPower * 2) {
-        doublingTimes.push(DT);
-        lastPower = log;
-        lastPowerTime = time;
-        reactivityCsv += `${lastPower},${inhour(DT)}\n`;
-      }
+      processRow(log, time);
     } else {
-      corrected.push(linear);
-      if (linear >= lastPower * 2) {
-        doublingTimes.push(DT);
-        lastPower = linear;
-        lastPowerTime = time;
-        reactivityCsv += `${lastPower},${inhour(DT)}\n`;
-      }
+      processRow(linear, time);
     }
     outputCsv += `${linear},${log},${corrected[i - 1]}\n`;
   }
@@ -90,6 +105,13 @@ async function main() {
   console.log(`Stable period = ${stable_period}`);
   const reactivity = inhour(DT);
   console.log(`Reactivity: ${reactivity}`);
+  // Is this a good estimate?
+  const power_coefficient_total =
+    (reactivities[reactivities.length - 1] - reactivities[0]) /
+    (powers[powers.length - 1] - powers[0]);
+  console.log(`Estimated total power coefficient: ${power_coefficient_total}`);
+  const power_defect_total = power_coefficient_total * (powers[powers.length - 1] - powers[0]);
+  console.log(`Estimated total power defect: ${power_defect_total}`);
   await fs.writeFile(
     path.resolve(__dirname, '..', 'output', 'lab3_s1_15s.csv'),
     outputCsv
